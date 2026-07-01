@@ -138,7 +138,7 @@ source ~/.profile   # or source ~/.bashrc
 #### 2. Clone this repository
 
 ```bash
-git clone https://github.com/AHartNtkn/contForm.git
+git clone https://github.com/anoma/consistent-histories-lean.git
 cd contForm
 ```
 
