@@ -49,7 +49,7 @@ the downstream results built on the foundations, and `AlternativePresentation`
 and `PaperTargets` hold the Section 7–8 material.
 
 ```
-ContForm/
+ConsistentHistories/
 ├── Foundation/                       # reusable definitions, structures, and laws
 │   ├── LocatedSemilattices/
 │   │   ├── TopTrees.lean             # §2.1  bounded semilattices, contradiction, top-trees
@@ -160,10 +160,10 @@ This builds the project **and verifies all proofs**. It will:
 
 - The one-time Lean toolchain download is a few hundred megabytes; after that
   the project itself has no dependencies to fetch.
-- You'll see progress lines like `✔ [40/44] Built ContForm.Models ...` as
+- You'll see progress lines like `✔ [40/44] Built ConsistentHistories.Models ...` as
   modules are compiled. The main safety proofs are in the
-  `ContForm.Routes.PathProperties` (Theorem 5.6.2) and
-  `ContForm.Routes.StrongerSafety` (Theorem 6.4.3) modules.
+  `ConsistentHistories.Routes.PathProperties` (Theorem 5.6.2) and
+  `ConsistentHistories.Routes.StrongerSafety` (Theorem 6.4.3) modules.
 - A clean build takes on the order of a minute or two on a typical machine.
   Subsequent builds are much faster.
 
@@ -184,7 +184,7 @@ For the best experience viewing and stepping through proofs:
    - Install the extension published by "leanprover" (the official extension
      from the Lean development team; see the
      [official Lean installation page](https://lean-lang.org/install/)).
-4. Open any `.lean` file (e.g. `ContForm.lean`) to see syntax highlighting and
+4. Open any `.lean` file (e.g. `ConsistentHistories.lean`) to see syntax highlighting and
    proof states.
 
 ## How to explore the formalization
@@ -199,13 +199,13 @@ If you're reading the paper and want to see how something is formalized:
 
 For example, the main safety theorem (Theorem 5.6.2) is
 `inconsistentIndex_implies_activeInconsistentIndex` in
-`ContForm/Routes/PathProperties/MainResult.lean`, and the absolute-consistency
+`ConsistentHistories/Routes/PathProperties/MainResult.lean`, and the absolute-consistency
 theorem (Theorem 6.4.3) is `inconsistentCircuit_implies_cClosure_inconsistent`
-in `ContForm/Routes/StrongerSafety/Absolute.lean`.
+in `ConsistentHistories/Routes/StrongerSafety/Absolute.lean`.
 
 ### In VS Code
 
-1. Open a `.lean` file (e.g. `ContForm.lean`).
+1. Open a `.lean` file (e.g. `ConsistentHistories.lean`).
 2. Click anywhere in a proof.
 3. The "Lean Infoview" panel shows the proof state at that point.
 4. Hover over identifiers to see their types.

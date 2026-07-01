@@ -1,0 +1,10 @@
+import ConsistentHistories.AlternativePresentation.Attestation
+import ConsistentHistories.AlternativePresentation.Semitopology
+import ConsistentHistories.AlternativePresentation.Cutting
+import ConsistentHistories.AlternativePresentation.AlternativeLocatedSemilattice
+import ConsistentHistories.AlternativePresentation.DegenerateAlternativeCutExample
+
+/-!
+Paper section 7: Alternative presentation of located semilattices with Cut.
+
+-/
