@@ -14,7 +14,7 @@ resolves by the operand type rather than being overloaded per structure.
 class Contradictory.{w} (α : Type w) where
   contradicts : α → α → Prop
 
-/-- The contradiction relation of Definition 2.1.4, written `a 🗲 b`; resolves to
+/-- The contradiction relation of Definition 2.1.3, written `a 🗲 b`; resolves to
 the `Contradictory` instance for the element type. -/
 notation:50 a:51 " 🗲 " b:51 => Contradictory.contradicts a b
 
@@ -77,7 +77,7 @@ def Sequential : Prop :=
 def Consistent (t : α) : Prop :=
   t ≠ top
 
-/-- Remark 2.1.3: `top` is not consistent. -/
+/-- Remark 2.1.5: `top` is not consistent. -/
 theorem not_consistent_top : ¬ Consistent (top : α) := by
   intro h
   exact h rfl
@@ -361,7 +361,7 @@ theorem sequential_of_topDeletedOrderTree
     Sequential (α := α) := by
   exact sequential_iff_topDeletedOrderTree.mpr htree
 
-/-- Definition 2.1.4: `t` contradicts `t'` when `t ⊔ t' = ⊤`. -/
+/-- Definition 2.1.3: `t` contradicts `t'` when `t ⊔ t' = ⊤`. -/
 def Contradicts (t t' : α) : Prop :=
   join t t' = top
 
@@ -369,29 +369,29 @@ def Contradicts (t t' : α) : Prop :=
 via the shared `Contradictory` class; `a 🗲 b` is definitionally `Contradicts`. -/
 instance (α) [BoundedSemilattice α] : Contradictory α := ⟨Contradicts⟩
 
-/-- Definition 2.1.4: contradiction is exactly join being `top`. -/
+/-- Definition 2.1.3: contradiction is exactly join being `top`. -/
 theorem contradicts_iff_join_eq_top (t t' : α) :
     t 🗲 t' ↔ t ⊔ t' = top := by
   rfl
 
-/-- Definition 2.1.4: every element contradicts `top`. -/
+/-- Definition 2.1.3: every element contradicts `top`. -/
 theorem contradicts_top_right (t : α) :
     t 🗲 (top : α) :=
   le_top t
 
-/-- Definition 2.1.4: `top` contradicts every element. -/
+/-- Definition 2.1.3: `top` contradicts every element. -/
 theorem contradicts_top_left (t : α) :
     (top : α) 🗲 t := by
   show Contradicts top t
   rw [Contradicts, join_comm top t]
   exact le_top t
 
-/-- Remark 2.1.3: `top` contradicts itself. -/
+/-- Remark 2.1.5: `top` contradicts itself. -/
 theorem top_contradicts_top :
     (top : α) 🗲 top := by
   exact contradicts_top_right top
 
-/-- Definition 2.1.4: contradiction is symmetric. -/
+/-- Definition 2.1.3: contradiction is symmetric. -/
 theorem contradicts_comm {t t' : α} :
     t 🗲 t' → t' 🗲 t := by
   intro h
@@ -399,7 +399,7 @@ theorem contradicts_comm {t t' : α} :
   rw [Contradicts, join_comm t' t]
   exact h
 
-/-- Definition 2.1.4: self-contradiction is exactly being `top`. -/
+/-- Definition 2.1.3: self-contradiction is exactly being `top`. -/
 theorem contradicts_self_iff_eq_top (t : α) :
     t 🗲 t ↔ t = top := by
   constructor
@@ -409,14 +409,14 @@ theorem contradicts_self_iff_eq_top (t : α) :
     rw [h]
     exact contradicts_top_right top
 
-/-- Definition 2.1.4: consistent elements do not contradict themselves. -/
+/-- Definition 2.1.3: consistent elements do not contradict themselves. -/
 theorem not_contradicts_self_of_consistent
     {t : α} (ht : Consistent t) : ¬ t 🗲 t := by
   intro h
   exact ht ((contradicts_self_iff_eq_top t).mp h)
 
 /--
-Definition 2.1.4 consequence: if comparable elements contradict, the upper
+Definition 2.1.3 consequence: if comparable elements contradict, the upper
 element is `top`.
 -/
 theorem eq_top_of_le_and_contradicts_right
@@ -425,7 +425,7 @@ theorem eq_top_of_le_and_contradicts_right
   htu.symm.trans hcontr
 
 /--
-Definition 2.1.4 consequence: if comparable elements contradict in the swapped
+Definition 2.1.3 consequence: if comparable elements contradict in the swapped
 order, the upper element is `top`.
 -/
 theorem eq_top_of_le_and_contradicts_left
@@ -434,7 +434,7 @@ theorem eq_top_of_le_and_contradicts_left
   exact eq_top_of_le_and_contradicts_right htu (contradicts_comm hcontr)
 
 /--
-Definition 2.1.4 consequence: a consistent upper bound cannot contradict a lower
+Definition 2.1.3 consequence: a consistent upper bound cannot contradict a lower
 element.
 -/
 theorem not_contradicts_right_of_le_of_consistent
@@ -444,7 +444,7 @@ theorem not_contradicts_right_of_le_of_consistent
   exact hu (eq_top_of_le_and_contradicts_right htu hcontr)
 
 /--
-Definition 2.1.4 consequence: a consistent upper bound cannot contradict a lower
+Definition 2.1.3 consequence: a consistent upper bound cannot contradict a lower
 element when contradiction is written in the swapped order.
 -/
 theorem not_contradicts_left_of_le_of_consistent
@@ -453,7 +453,7 @@ theorem not_contradicts_left_of_le_of_consistent
   intro hcontr
   exact hu (eq_top_of_le_and_contradicts_left htu hcontr)
 
-/-- Lemma 2.1.5 (monotonicity of contradiction): if `t ≤ u`, `t' ≤ u'`, and
+/-- Lemma 2.1.6 (monotonicity of contradiction): if `t ≤ u`, `t' ≤ u'`, and
 `t 🗲 t'`, then `u 🗲 u'`. -/
 theorem contradiction_monotone
     {t t' u u' : α}
@@ -464,14 +464,14 @@ theorem contradiction_monotone
   rw [htt'] at hjoin_le
   exact (le_antisymm hjoin_le (le_top' (u ⊔ u'))).symm
 
-/-- Lemma 2.1.5: contradiction is monotone in the left input. -/
+/-- Lemma 2.1.6: contradiction is monotone in the left input. -/
 theorem contradiction_monotone_left
     {t t' u : α}
     (htu : t ≤ u) (htt' : t 🗲 t') :
     u 🗲 t' := by
   exact contradiction_monotone htu (le_refl t') htt'
 
-/-- Lemma 2.1.5: contradiction is monotone in the right input. -/
+/-- Lemma 2.1.6: contradiction is monotone in the right input. -/
 theorem contradiction_monotone_right
     {t t' u' : α}
     (ht'u' : t' ≤ u') (htt' : t 🗲 t') :
@@ -658,7 +658,7 @@ end OrderTopTreeSpec
 
 namespace ConcreteTopTreeExample
 
-/-- Example 2.1.6, carrier. -/
+/-- Example 2.1.4, carrier. -/
 inductive Point where
   | bot
   | a
@@ -670,7 +670,7 @@ inductive Point where
 
 namespace Point
 
-/-- Example 2.1.6, join table. -/
+/-- Example 2.1.4, join table. -/
 def join : Point → Point → Point
   | bot, x => x
   | x, bot => x
@@ -710,7 +710,7 @@ theorem join_top_right (x : Point) : join x top = top := by
 
 end Point
 
-/-- Example 2.1.6, as a bounded semilattice. -/
+/-- Example 2.1.4, as a bounded semilattice. -/
 instance semilattice : BoundedSemilattice Point where
   join := Point.join
   bot := Point.bot
@@ -721,7 +721,7 @@ instance semilattice : BoundedSemilattice Point where
   bot_le := Point.join_bot_left
   le_top := Point.join_top_right
 
-/-- Example 2.1.6: the example is a top-tree. -/
+/-- Example 2.1.4: the example is a top-tree. -/
 theorem isTopTree : BoundedSemilattice.IsTopTree (α := Point) := by
   intro x y
   cases x <;> cases y <;> simp [semilattice, Point.join]
@@ -742,81 +742,81 @@ theorem join_c_d : Point.c ⊔ Point.d = (⊤ : Point) := rfl
 theorem join_top (x : Point) : x ⊔ (⊤ : Point) = (⊤ : Point) :=
   Point.join_top_right x
 
-/-- Example 2.1.6: `bot < a` in the worked top-tree example. -/
+/-- Example 2.1.4: `bot < a` in the worked top-tree example. -/
 theorem bot_lt_a : Point.bot < Point.a := by
   constructor
   · rfl
   · intro h
     cases h
 
-/-- Example 2.1.6: `a < b` in the worked top-tree example. -/
+/-- Example 2.1.4: `a < b` in the worked top-tree example. -/
 theorem a_lt_b : Point.a < Point.b := by
   constructor
   · rfl
   · intro h
     cases h
 
-/-- Example 2.1.6: `a < c` in the worked top-tree example. -/
+/-- Example 2.1.4: `a < c` in the worked top-tree example. -/
 theorem a_lt_c : Point.a < Point.c := by
   constructor
   · rfl
   · intro h
     cases h
 
-/-- Example 2.1.6: `bot < d` in the worked top-tree example. -/
+/-- Example 2.1.4: `bot < d` in the worked top-tree example. -/
 theorem bot_lt_d : Point.bot < Point.d := by
   constructor
   · rfl
   · intro h
     cases h
 
-/-- Example 2.1.6: `b < top` in the worked top-tree example. -/
+/-- Example 2.1.4: `b < top` in the worked top-tree example. -/
 theorem b_lt_top : Point.b < Point.top := by
   constructor
   · rfl
   · intro h
     cases h
 
-/-- Example 2.1.6: `c < top` in the worked top-tree example. -/
+/-- Example 2.1.4: `c < top` in the worked top-tree example. -/
 theorem c_lt_top : Point.c < Point.top := by
   constructor
   · rfl
   · intro h
     cases h
 
-/-- Example 2.1.6: `d < top` in the worked top-tree example. -/
+/-- Example 2.1.4: `d < top` in the worked top-tree example. -/
 theorem d_lt_top : Point.d < Point.top := by
   constructor
   · rfl
   · intro h
     cases h
 
-/-- Example 2.1.6: `bot` is consistent in the concrete worked example. -/
+/-- Example 2.1.4: `bot` is consistent in the concrete worked example. -/
 theorem bot_consistent : BoundedSemilattice.Consistent Point.bot := by
   intro h
   cases h
 
-/-- Example 2.1.6: `a` is consistent in the concrete worked example. -/
+/-- Example 2.1.4: `a` is consistent in the concrete worked example. -/
 theorem a_consistent : BoundedSemilattice.Consistent Point.a := by
   intro h
   cases h
 
-/-- Example 2.1.6: `b` is consistent in the concrete worked example. -/
+/-- Example 2.1.4: `b` is consistent in the concrete worked example. -/
 theorem b_consistent : BoundedSemilattice.Consistent Point.b := by
   intro h
   cases h
 
-/-- Example 2.1.6: `c` is consistent in the concrete worked example. -/
+/-- Example 2.1.4: `c` is consistent in the concrete worked example. -/
 theorem c_consistent : BoundedSemilattice.Consistent Point.c := by
   intro h
   cases h
 
-/-- Example 2.1.6: `d` is consistent in the concrete worked example. -/
+/-- Example 2.1.4: `d` is consistent in the concrete worked example. -/
 theorem d_consistent : BoundedSemilattice.Consistent Point.d := by
   intro h
   cases h
 
-/-- Example 2.1.6: `b` and `c` are incomparable continuations of `a`. -/
+/-- Example 2.1.4: `b` and `c` are incomparable continuations of `a`. -/
 theorem b_incomparable_c : BoundedSemilattice.Incomparable Point.b Point.c := by
   constructor
   · intro h
@@ -824,7 +824,7 @@ theorem b_incomparable_c : BoundedSemilattice.Incomparable Point.b Point.c := by
   · intro h
     cases h
 
-/-- Example 2.1.6: `b` and `d` lie on different branches. -/
+/-- Example 2.1.4: `b` and `d` lie on different branches. -/
 theorem b_incomparable_d : BoundedSemilattice.Incomparable Point.b Point.d := by
   constructor
   · intro h
@@ -832,7 +832,7 @@ theorem b_incomparable_d : BoundedSemilattice.Incomparable Point.b Point.d := by
   · intro h
     cases h
 
-/-- Example 2.1.6: `c` and `d` lie on different branches. -/
+/-- Example 2.1.4: `c` and `d` lie on different branches. -/
 theorem c_incomparable_d : BoundedSemilattice.Incomparable Point.c Point.d := by
   constructor
   · intro h
