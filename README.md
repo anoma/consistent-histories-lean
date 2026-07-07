@@ -4,8 +4,7 @@ A complete Lean 4 formalization of the paper *Consistent histories: enforcing
 linearity and excluding double-spending amongst collaborating controllers* by
 Murdoch J. Gabbay and Isaac Sheff. This repository contains mechanically
 verified proofs of the paper's development — from the algebra of *located
-semilattices with Cut* through to its two main safety results — with no
-`sorry`s and no external library dependencies.
+semilattices with Cut* through to its two main safety results.
 
 ## What's in this repository?
 
