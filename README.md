@@ -139,7 +139,7 @@ source ~/.profile   # or source ~/.bashrc
 
 ```bash
 git clone https://github.com/anoma/consistent-histories-lean.git
-cd contForm
+cd consistent-histories-lean
 ```
 
 (Or unpack the zip archive of this repository, if you downloaded it from a DOI
