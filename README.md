@@ -2,7 +2,7 @@
 
 A complete Lean 4 formalization of the paper *Consistent histories: enforcing
 linearity and excluding double-spending amongst collaborating controllers* by
-Murdoch J. Gabbay and Isaac Sheff ([doi:10.5281/zenodo.21074395](https://doi.org/10.5281/zenodo.21074395)).
+Murdoch J. Gabbay and Isaac Sheff ([10.5281/zenodo.21074359](https://doi.org/10.5281/zenodo.21074359)).
 This repository contains mechanically
 verified proofs of the paper's development — from the algebra of *located
 semilattices with Cut* through to its two main safety results.
