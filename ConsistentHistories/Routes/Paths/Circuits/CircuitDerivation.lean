@@ -54,14 +54,14 @@ def cutLeft {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Time Ctrl
                   ((cd.circuit.left.1.replace k leftNew hleftCtrl hconsistent).get idx) =
                 controller (cd.circuit.left.1.get idx) := by
             by_cases hidx : idx = k
-            · rw [hidx]
+            · erw [hidx]
               exact Prepath.replace_get_same_controller cd.circuit.left.1 k leftNew
                 hleftCtrl hconsistent
             · exact Prepath.replace_get_ne_controller cd.circuit.left.1 hidx leftNew
                 hleftCtrl hconsistent
           have hidx_base :
               cd.circuit.left.1.paperIndex idx < cd.circuit.left.1.length := by
-            simpa [Prepath.replace_paperIndex] using hidx_lt
+            exact hidx_lt
           exact hleftController.trans
             (cd.circuit.controller_eq_before_last idx hidx_base) }
     leftDerivation := leftCut
@@ -132,8 +132,8 @@ theorem cutLeft_left_center_inactive {Time : Type v} {Ctrl : Type u} [LocatedSem
     (cd.circuit.left.1.replace k leftNew hleftCtrl hconsistent).Inactive j
   refine ⟨k, i, ?_⟩
   refine ⟨hij, hjk, ?_⟩
-  simpa [leftNew, Prepath.replace_get_same, Prepath.replace_paperIndex] using
-    hasCutLabelAt_nextIndex (Time := Time) (cd.circuit.left.1.paperIndex i) tk
+  simp [leftNew, Prepath.replace_get_same, Prepath.replace_paperIndex]
+  exact hasCutLabelAt_nextIndex (Time := Time) (cd.circuit.left.1.paperIndex i) tk
 
 /--
 Extend both sides of a circuit derivation by final Cut steps. The Cut centers
@@ -372,6 +372,7 @@ theorem swap_leftTime {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut
     cd.swap.leftTime i =
       cd.rightTime (Fin.cast cd.circuit.length_eq.symm i) := by
   simp [leftTime, rightTime, rightIndex, CircuitDerivation.swap, Circuit.swap]
+  rfl
 
 /-- Right times in the swapped circuit derivation are original left times. -/
 theorem swap_rightTime {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Time Ctrl] (cd : CircuitDerivation Time)
@@ -658,7 +659,7 @@ def incLeft {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Time Ctrl
                 hlt.1.1.symm hconsistent
           have hi_base :
               cd.circuit.left.1.paperIndex i < cd.circuit.left.1.length := by
-            simpa [Prepath.replace_paperIndex] using hi
+            exact hi
           exact hleftController.trans
             (cd.circuit.controller_eq_before_last i hi_base) }
     leftDerivation := leftInc
@@ -691,7 +692,7 @@ def incRight {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Time Ctr
                 controller
                   (cd.circuit.right.1.get (Fin.cast cd.circuit.length_eq i)) := by
             by_cases hidx : Fin.cast cd.circuit.length_eq i = rightIdx
-            · rw [hidx]
+            · erw [hidx]
               exact Prepath.replace_get_same_controller cd.circuit.right.1 rightIdx t'
                 hlt.1.1.symm hconsistent
             · exact Prepath.replace_get_ne_controller cd.circuit.right.1 hidx t'
@@ -736,7 +737,7 @@ def cutYouIntroRight {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut 
                 controller
                   (cd.circuit.right.1.get (Fin.cast cd.circuit.length_eq i)) := by
             by_cases hidx : Fin.cast cd.circuit.length_eq i = rightIdx
-            · rw [hidx]
+            · erw [hidx]
               exact Prepath.replace_get_same_controller cd.circuit.right.1
                 rightIdx (⋉ target t) hctrl hconsistent
             · exact Prepath.replace_get_ne_controller cd.circuit.right.1 hidx
@@ -807,7 +808,7 @@ theorem incLeft_inactive_of_inactive {Time : Type v} {Ctrl : Type u} [LocatedSem
   constructor
   · exact cd.leftDerivation.inc_inactive_of_inactive hinactive.1 hlt hflag
       hconsistent
-  · simpa [incLeft, Inactive, rightIndex] using hinactive.2
+  · exact hinactive.2
 
 theorem incRight_inactive_of_inactive {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Time Ctrl]
     (cd : CircuitDerivation Time) (j : cd.Index) {t' : Time}
@@ -842,7 +843,7 @@ theorem incLeft_isInitialPrefix {Time : Type v} {Ctrl : Type u} [LocatedSemilatt
     (hconsistent : ConsistentTime t') :
     cd.IsInitialPrefix (cd.incLeft j hlt hflag hconsistent) := by
   constructor
-  · simpa [incLeft] using
+  · exact
       InitialPrefix.inc cd.leftDerivation
         (InitialPrefix.refl cd.leftDerivation) j hlt hflag hconsistent
   · simpa [incLeft] using InitialPrefix.refl cd.rightDerivation
@@ -857,7 +858,7 @@ theorem incRight_isInitialPrefix {Time : Type v} {Ctrl : Type u} [LocatedSemilat
     cd.IsInitialPrefix (cd.incRight j hlt hflag hconsistent) := by
   constructor
   · simpa [incRight] using InitialPrefix.refl cd.leftDerivation
-  · simpa [incRight] using
+  · exact
       InitialPrefix.inc cd.rightDerivation
         (InitialPrefix.refl cd.rightDerivation) (cd.rightIndex j) hlt hflag
         hconsistent
@@ -949,12 +950,12 @@ theorem cutLeft_prefix_cases {Time : Type v} {Ctrl : Type u} [LocatedSemilattice
       hij hjk hk hj hi hconsistent
   rcases
       InitialPrefix.immediate_extension_cases hleftStep
-        (by simpa [cutLeft, leftCut] using hprefix.1) rfl with
+        (by exact hprefix.1) rfl with
     hbefore | hafter
   · exact Or.inl
       ⟨hbefore, by simpa [cutLeft] using hprefix.2⟩
   · exact Or.inr
-      ⟨by simpa [cutLeft, leftCut] using hafter,
+      ⟨by exact hafter,
         by simpa [cutLeft] using hprefix.2⟩
 
 /--
@@ -984,13 +985,13 @@ theorem cutYouIntroRight_prefix_cases {Time : Type v} {Ctrl : Type u} [LocatedSe
       (InitialPrefix.refl cd.rightDerivation) rightIdx target hshape hconsistent
   rcases
       InitialPrefix.immediate_extension_cases hrightStep
-        (by simpa [cutYouIntroRight, rightIntro, rightIdx] using hprefix.2) rfl with
+        (by exact hprefix.2) rfl with
     hbefore | hafter
   · exact Or.inl
       ⟨by simpa [cutYouIntroRight] using hprefix.1, hbefore⟩
   · exact Or.inr
       ⟨by simpa [cutYouIntroRight] using hprefix.1,
-        by simpa [cutYouIntroRight, rightIntro, rightIdx] using hafter⟩
+        by exact hafter⟩
 
 theorem IsInitialPrefix.trans {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Time Ctrl]
     {pref mid cd : CircuitDerivation Time}
@@ -1250,7 +1251,7 @@ theorem not_inconsistentIndex_of_incRight_left_prefix_contradictions_inactive
     rfl
   have hleftInactive :=
     hleftPrefixContr pref.leftDerivation hleft_prefix (by
-      simpa [leftTime, hidx] using hcontr_final)
+      exact hcontr_final)
   exact Or.inl (by simpa [hidx] using hleftInactive)
 
 theorem not_inconsistentIndex_of_cutYouIntroRight_left_prefix_contradictions_inactive
@@ -1293,7 +1294,7 @@ theorem not_inconsistentIndex_of_cutYouIntroRight_left_prefix_contradictions_ina
     rfl
   have hleftInactive :=
     hleftPrefixContr pref.leftDerivation hleft_prefix (by
-      simpa [leftTime, hidx] using hcontr_final)
+      exact hcontr_final)
   exact Or.inl (by simpa [hidx] using hleftInactive)
 
 theorem preCut_center_contradicts_same_target_cutYou_of_cutMe
@@ -1363,7 +1364,12 @@ theorem cutLeft_cutYouIntroRight_center_no_contradiction_final_impossible
       let finalCd := cutCd.cutYouIntroRight j target hshape hrightCons
       (finalCd.leftTime j) 🗲 (finalCd.rightTime j)) :
     False := by
-  exact hpreCutCenterNoContr (by simpa using hfinal)
+  exact hpreCutCenterNoContr (by
+    have h := hfinal
+    simp only at h
+    erw [cutYouIntroRight_rightTime_changed, cutYouIntroRight_leftTime_unchanged,
+      cutLeft_leftTime_center_unchanged] at h
+    exact h)
 
 theorem three_index_cut_data_infinite_interval_of_center_consistent
     {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Time Ctrl] {tj tk : Time}
@@ -1743,31 +1749,31 @@ theorem cutPair_center_inconsistent_inactive {Time : Type v} {Ctrl : Type u} [Lo
       hconsistent'
   have hprefix : cd.IsInitialPrefix cutCd := by
     constructor
-    · simpa [cutCd, CircuitDerivation.cutPair] using
+    · exact
         (InitialPrefix.cut cd.leftDerivation
           (InitialPrefix.refl cd.leftDerivation) hij hjk hk hj hi hconsistent)
-    · simpa [cutCd, CircuitDerivation.cutPair] using
+    · exact
         (InitialPrefix.cut cd.rightDerivation
           (InitialPrefix.refl cd.rightDerivation) hij' hjk' hk' hj' hi'
           hconsistent')
   have hinconsistent : cutCd.InconsistentIndex j := by
     refine ⟨cd, hprefix, ?_⟩
-    simpa [CircuitDerivation.prefixIndex] using And.intro hactiveCenter hcontrCenter
+    exact And.intro hactiveCenter hcontrCenter
   have hleftInactive : cutCd.leftDerivation.Inactive j := by
     refine ⟨k, i, ?_⟩
     refine ⟨hij, hjk, ?_⟩
-    simpa [cutCd, CircuitDerivation.cutPair, Derivation.root,
-      Prepath.replace_get_same, Prepath.replace_paperIndex] using
-      (hasCutLabelAt_nextIndex (Time := Time) (cd.circuit.left.1.paperIndex i) tk)
+    simp [cutCd, CircuitDerivation.cutPair, Derivation.root, Prepath.replace_get_same,
+        Prepath.replace_paperIndex]
+    exact (hasCutLabelAt_nextIndex (Time := Time) (cd.circuit.left.1.paperIndex i) tk)
   have hrightIndex_center : cutCd.rightIndex j = j' := by
     rw [hcenterRight]
     rfl
   have hrightInactive : cutCd.rightDerivation.Inactive j' := by
     refine ⟨k', i', ?_⟩
     refine ⟨hij', hjk', ?_⟩
-    simpa [cutCd, CircuitDerivation.cutPair, Derivation.root,
-      Prepath.replace_get_same, Prepath.replace_paperIndex] using
-      (hasCutLabelAt_nextIndex (Time := Time) (cd.circuit.right.1.paperIndex i') tk')
+    simp [cutCd, CircuitDerivation.cutPair, Derivation.root, Prepath.replace_get_same,
+        Prepath.replace_paperIndex]
+    exact (hasCutLabelAt_nextIndex (Time := Time) (cd.circuit.right.1.paperIndex i') tk')
   have hinactive : cutCd.Inactive j := by
     constructor
     · exact hleftInactive
@@ -2060,10 +2066,9 @@ theorem swap_active {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut T
     cd.swap.Active (cd.rightIndex i) := by
   rcases h with hleft | hright
   · exact Or.inr (by
-      simpa [CircuitDerivation.swap, cd.swap_rightIndex (cd.rightIndex i),
-        CircuitDerivation.rightIndex] using hleft)
+      exact hleft)
   · exact Or.inl (by
-      simpa [CircuitDerivation.swap] using hright)
+      exact hright)
 
 /--
 Doubly-active indexes are preserved when the two sides of a circuit derivation
@@ -2073,10 +2078,9 @@ theorem swap_doublyActive {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWit
     {i : cd.Index} (h : cd.DoublyActive i) :
     cd.swap.DoublyActive (cd.rightIndex i) := by
   exact
-    ⟨by simpa [CircuitDerivation.swap] using h.2,
+    ⟨by exact h.2,
       by
-        simpa [CircuitDerivation.swap, cd.swap_rightIndex (cd.rightIndex i),
-          CircuitDerivation.rightIndex] using h.1⟩
+        exact h.1⟩
 
 /--
 Paired initial-prefix evidence is preserved when the two sides of both circuit
@@ -2106,9 +2110,7 @@ theorem swap_inconsistentIndex {Time : Type v} {Ctrl : Type u} [LocatedSemilatti
     exact swap_doublyActive pref (by simpa [iprefix] using hactive)
   have hcontrSwap :
       (pref.swap.leftTime (pref.rightIndex iprefix)) 🗲 (pref.swap.rightTime (pref.rightIndex iprefix)) := by
-    simpa [CircuitDerivation.swap, CircuitDerivation.leftTime,
-      CircuitDerivation.rightTime, pref.swap_rightIndex (pref.rightIndex iprefix),
-      CircuitDerivation.rightIndex, iprefix] using contradicts_symm hcontr
+    exact contradicts_symm hcontr
   exact ⟨pref.swap, hprefSwap, by
     simpa [hidx] using And.intro hactiveSwap hcontrSwap⟩
 
@@ -2134,7 +2136,7 @@ theorem inconsistentIndex_of_swap {Time : Type v} {Ctrl : Type u} [LocatedSemila
       cd.swap.swap.InconsistentIndex
         (cd.swap.rightIndex i) :=
     swap_inconsistentIndex cd.swap h
-  simpa [CircuitDerivation.swap, Circuit.swap, cd.swap_rightIndex i] using hswap
+  exact hswap
 
 /--
 Transport an active-inconsistent witness from the swapped circuit derivation
@@ -2148,7 +2150,7 @@ theorem activeInconsistentIndex_of_swap {Time : Type v} {Ctrl : Type u} [Located
       cd.swap.swap.ActiveInconsistentIndex
         (cd.swap.rightIndex i) :=
     swap_activeInconsistentIndex cd.swap h
-  simpa [CircuitDerivation.swap, Circuit.swap, cd.swap_rightIndex i] using hswap
+  exact hswap
 
 /--
 Least inconsistent indexes are preserved when the two sides of a circuit
@@ -2163,7 +2165,7 @@ theorem swap_leastInconsistentAtOrBelow {Time : Type v} {Ctrl : Type u} [Located
   · exact cd.swap_inconsistentIndex h.2.1
   · intro l hlt hinconsistent
     exact h.2.2 (Fin.cast cd.circuit.length_eq.symm l)
-      (by simpa [CircuitDerivation.rightIndex] using hlt)
+      (by exact hlt)
       (cd.inconsistentIndex_of_swap hinconsistent)
 
 /-- Proposition 4.3.4, first clause. -/
@@ -2176,10 +2178,10 @@ theorem contradiction_persists_from_prefix {Time : Type v} {Ctrl : Type u} [Loca
   intro iprefix hcontr
   have hleft_raw := InitialPrefix.times_increase hprefix.1 iprefix
   have hleft : (pref.leftTime iprefix) ≼ (cd.leftTime i) := by
-    simpa [leftTime, prefixIndex] using hleft_raw
+    exact hleft_raw
   have hright_raw := InitialPrefix.times_increase hprefix.2 (pref.rightIndex iprefix)
   have hright : (pref.rightTime iprefix) ≼ (cd.rightTime i) := by
-    simpa [rightTime, rightIndex, prefixIndex] using hright_raw
+    exact hright_raw
   exact contradicts_of_le_both hleft hright hcontr
 
 /--
@@ -2786,7 +2788,7 @@ theorem swap_rightCompatibleUpTo {Time : Type v} {Ctrl : Type u} [LocatedSemilat
   let centerLeft : cd.Index := Fin.cast cd.circuit.length_eq.symm center
   have hcenter_left_le :
       centerLeft.val ≤ (Fin.cast cd.circuit.length_eq.symm start).val := by
-    simpa [centerLeft] using hcenter_le
+    exact hcenter_le
   have hcompatAt :
       ∀ {k i k' i'}, ContainsCut cd.leftDerivation k
           (cd.circuit.left.1.paperIndex centerLeft) i →
@@ -2797,6 +2799,7 @@ theorem swap_rightCompatibleUpTo {Time : Type v} {Ctrl : Type u} [LocatedSemilat
       cd.circuit.left.1.paperIndex centerLeft =
         cd.circuit.right.1.paperIndex center := by
     simp [centerLeft, Prepath.paperIndex]
+    rfl
   have hrightOrig :
       ContainsCut cd.rightDerivation k
         (cd.circuit.left.1.paperIndex centerLeft) lower := by
@@ -2820,7 +2823,7 @@ theorem swap_rightCompatibleBefore {Time : Type v} {Ctrl : Type u} [LocatedSemil
   let centerLeft : cd.Index := Fin.cast cd.circuit.length_eq.symm center
   have hcenter_left_lt :
       centerLeft.val < (Fin.cast cd.circuit.length_eq.symm start).val := by
-    simpa [centerLeft] using hcenter_lt
+    exact hcenter_lt
   have hcompatAt :
       ∀ {k i k' i'}, ContainsCut cd.leftDerivation k
           (cd.circuit.left.1.paperIndex centerLeft) i →
@@ -2831,6 +2834,7 @@ theorem swap_rightCompatibleBefore {Time : Type v} {Ctrl : Type u} [LocatedSemil
       cd.circuit.left.1.paperIndex centerLeft =
         cd.circuit.right.1.paperIndex center := by
     simp [centerLeft, Prepath.paperIndex]
+    rfl
   have hrightOrig :
       ContainsCut cd.rightDerivation k
         (cd.circuit.left.1.paperIndex centerLeft) lower := by
@@ -2860,11 +2864,11 @@ theorem swap_rightIncompatibleAt {Time : Type v} {Ctrl : Type u} [LocatedSemilat
   have hswapLeft :
       ContainsCut cd.swap.leftDerivation rightK
         (cd.swap.circuit.left.1.paperIndex center) rightLower := by
-    simpa [CircuitDerivation.swap, Circuit.swap, hcenterPaper] using hright
+    exact hright
   have hswapRight :
       ContainsCut cd.swap.rightDerivation leftK
         (cd.swap.circuit.left.1.paperIndex center) leftLower := by
-    simpa [CircuitDerivation.swap, Circuit.swap, hcenterPaper] using hleft
+    exact hleft
   exact
     ⟨rightK, rightLower, leftK, leftLower, hswapLeft, hswapRight, hne.symm⟩
 

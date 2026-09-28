@@ -57,6 +57,10 @@ instance gamePlaySemilattice : BoundedSemilattice GamePlay where
   bot_le := GamePlay.bot_le
   le_top := GamePlay.le_top
 
+@[simp] theorem gamePlaySemilattice_join (x y : GamePlay) :
+    x ⊔ y = GamePlay.join x y :=
+  rfl
+
 /-- Example 2.3.5: `paper ∨ scissors = ⊤`. -/
 theorem gamePlay_paper_join_scissors :
     GamePlay.join GamePlay.paper GamePlay.scissors = GamePlay.top := by
@@ -95,7 +99,7 @@ theorem gamePlaySemilattice_le_iff (x y : GamePlay) :
 /-- Example 2.3.5: the flat play semilattice is sequential. -/
 theorem gamePlaySemilattice_sequential : gamePlaySemilattice.Sequential := by
   intro x y
-  cases x <;> cases y <;> simp [gamePlaySemilattice, GamePlay.join]
+  cases x <;> cases y <;> decide
 
 /-- Example 2.3.5: paper and scissors are contradictory plays. -/
 theorem gamePlay_paper_contradicts_scissors :
@@ -224,6 +228,18 @@ instance simpleGameLocatedSemilattice : LocatedSemilattice GameTime GameCtrl whe
                       cases play <;> cases play' <;> cases opp <;> cases opp' <;>
                         simp [RawContradicts, gameAttest, gameCrossAttest, GamePlay.join]
                           at hcontr ⊢
+
+@[simp] theorem simpleGameLocatedSemilattice_attest (t s : GameTime) :
+    t # s = gameAttest t s :=
+  rfl
+
+@[simp] theorem simpleGameLocatedSemilattice_top (p : GameCtrl) :
+    simpleGameLocatedSemilattice.top p = (p, GamePlay.top) :=
+  rfl
+
+@[simp] theorem simpleGameLocatedSemilattice_controller (t : GameTime) :
+    controller t = t.1 :=
+  rfl
 
 /-- Example 2.3.5: same-controller attestation is the play join. -/
 theorem simpleGame_same_controller_apply
@@ -375,12 +391,16 @@ theorem exists_locatedSemilattice_attest_not_associative :
 /-- Example 2.3.5: the paper-scissors-stone located semilattice is sequential. -/
 theorem simpleGame_sequential : simpleGameLocatedSemilattice.Sequential := by
   intro p t t'
-  rcases t with ⟨⟨pt, play⟩, ht⟩
-  rcases t' with ⟨⟨pt', play'⟩, ht'⟩
-  cases p <;> cases pt <;> cases pt' <;>
-    cases play <;> cases play' <;>
-      simp [LocatedSemilattice.fiber, simpleGameLocatedSemilattice, gameAttest,
-        GamePlay.join] at ht ht' ⊢
+  have key : ∀ a b : GameTime, controller a = p → controller b = p →
+      a # b = a ∨ a # b = b ∨ a # b = top p := by
+    rintro ⟨pt, play⟩ ⟨pt', play'⟩ ht ht'
+    cases p <;> cases pt <;> cases pt' <;>
+      cases play <;> cases play' <;>
+        simp [gameAttest, GamePlay.join] at ht ht' ⊢
+  rcases key t.1 t'.1 t.2 t'.2 with h | h | h
+  · exact Or.inl (Subtype.ext h)
+  · exact Or.inr (Or.inl (Subtype.ext h))
+  · exact Or.inr (Or.inr (Subtype.ext h))
 
 /-- Example 2.3.5: the paper-scissors-stone construction is a sequential located semilattice. -/
 theorem paperScissorsStone_sequential :
@@ -421,7 +441,8 @@ theorem simpleGameLocatedSemilattice_same_controller_contradicts_iff_play_contra
       x 🗲 y := by
   cases p <;> cases x <;> cases y <;>
     simp [Contradictory.contradicts, LocatedSemilattice.Contradicts, RawContradicts, BoundedSemilattice.Contradicts,
-      simpleGameLocatedSemilattice, gamePlaySemilattice, gameAttest, GamePlay.join]
+      simpleGameLocatedSemilattice, gamePlaySemilattice, gameAttest, GamePlay.join] <;>
+    rfl
 
 /--
 Example 2.3.5: distinct non-bottom, non-top simple-game plays at one

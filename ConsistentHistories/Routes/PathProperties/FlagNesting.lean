@@ -125,12 +125,14 @@ theorem time_flag {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Tim
     change HasPriorCutLabel (Tmid.replace changed tnew hlt.1.1.symm hconsistent) idx
     by_cases hsame : idx = changed
     · have hidxChanged : 1 < Tmid.paperIndex changed := by
-        simpa [hsame] using hidx
+        have h' := hidx
+        simp [hsame] at h'
+        exact h'
       have hold := ih changed hidxChanged
       rcases hold with ⟨target, hpos, hltarget, kind, base, hlabel⟩
       have hnew := hasCutLabel_transfer_of_flag_eq hlabel hflag
       exact
-        ⟨target, hpos, by simpa [hsame] using hltarget, by
+        ⟨target, hpos, by rw [hsame]; exact hltarget, by
           simpa [Prepath.replace, Prepath.get, hsame] using hnew⟩
     · have hold := ih idx hidx
       rcases hold with ⟨target, hpos, hltarget, hlabel⟩
@@ -153,11 +155,13 @@ theorem time_flag {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Tim
       hctrl hconsistent) idx
     by_cases hsame : idx = changed
     · have hidxChanged : 1 < Tmid.paperIndex changed := by
-        simpa [hsame] using hidx
+        have h' := hidx
+        simp [hsame] at h'
+        exact h'
       have hold := ih changed hidxChanged
       have hbounds := hasPrior_of_eq_nextIndex hold hshape
       exact
-        ⟨introTarget, hbounds.1, by simpa [hsame] using hbounds.2,
+        ⟨introTarget, hbounds.1, by rw [hsame]; exact hbounds.2,
           CutFlagKind.cutMe, base, by
             simp [Prepath.replace, Prepath.get, hsame, LocatedSemilatticeWithCut.cutMe]⟩
     · have hold := ih idx hidx
@@ -182,11 +186,13 @@ theorem time_flag {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Tim
       hctrl hconsistent) idx
     by_cases hsame : idx = changed
     · have hidxChanged : 1 < Tmid.paperIndex changed := by
-        simpa [hsame] using hidx
+        have h' := hidx
+        simp [hsame] at h'
+        exact h'
       have hold := ih changed hidxChanged
       have hbounds := hasPrior_of_eq_nextIndex hold hshape
       exact
-        ⟨introTarget, hbounds.1, by simpa [hsame] using hbounds.2,
+        ⟨introTarget, hbounds.1, by rw [hsame]; exact hbounds.2,
           CutFlagKind.cutYou, base, by
             simp [Prepath.replace, Prepath.get, hsame, LocatedSemilatticeWithCut.cutYou]⟩
     · have hold := ih idx hidx
@@ -272,7 +278,7 @@ theorem derivation_time_flag {Time : Type v} {Ctrl : Type u} [LocatedSemilattice
       ∃ target : Nat, 0 < target ∧ target < T.paperIndex j ∧
         HasCutLabelAt Time target (d.get j) := by
   intro j hj
-  simpa [Derivation.get] using time_flag d j hj
+  exact time_flag d j hj
 
 /--
 Lemma 5.2.1, in derivation notation, flag-membership form: a non-initial index has

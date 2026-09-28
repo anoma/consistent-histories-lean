@@ -264,13 +264,15 @@ instance toLocatedSemilattice (L : AlternativeLocatedSemilattice.{u}) :
       have hraw := hcontr.2
       change L.flatAttest ⟨q, y⟩ ⟨q, y'⟩ =
         ⟨q, (⊤ : L.timeAt q)⟩ at hraw
-      simpa [flatAttest, L.self_attest_join q y' y] using hraw
+      have h' := hraw
+      simp [flatAttest, L.self_attest_join q y' y] at h'
+      exact h'
     constructor
     · rfl
     · apply Sigma.ext
       · rfl
-      · simpa [flatAttest, L.self_attest_join] using
-          (L.attest q p).strongly_contradiction_preserving hyy' x x'
+      · simp [flatAttest, L.self_attest_join]
+        exact (L.attest q p).strongly_contradiction_preserving hyy' x x'
 
 /--
 Paper definitions Definition 7.6 and
@@ -431,6 +433,11 @@ def ofLocatedSemilattice
   self_attest_join := by
     intro p y x
     exact (@fiberAttestation_self_join Time Ctrl inst) p y x
+
+instance ofLocatedSemilattice_timeInst
+    {Time Ctrl : Type u} [inst : LocatedSemilattice Time Ctrl] (p : Ctrl) :
+    BoundedSemilattice ((@ofLocatedSemilattice Time Ctrl inst).timeAt p) :=
+  (@ofLocatedSemilattice Time Ctrl inst).timeInst p
 
 theorem ofLocatedSemilattice_self_join
     {Time Ctrl : Type u} [inst : LocatedSemilattice Time Ctrl]

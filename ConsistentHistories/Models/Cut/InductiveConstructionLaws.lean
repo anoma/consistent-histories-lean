@@ -74,7 +74,7 @@ theorem attest_contradiction_preserving_of_top {D : LocalStateData.{u}} {t t' s 
           | top p' =>
               simp [Time.controller] at htt'
               cases htt'
-              simpa [attest, attestAtTime, top, Time.controller] using
+              exact
                 attest_right_top_clause (attest (CTime.toTime tct) s)
                   (Time.controller (CTime.toTime tct))
           | consistent tct' =>
@@ -110,7 +110,7 @@ theorem attest_contradiction_preserving_of_top {D : LocalStateData.{u}} {t t' s 
                         simpa [CTime.toTime] using hsecond
                       simp [Time.controller] at hsecond'
                       rw [hsecond']
-                      simpa [top, Time.controller] using
+                      exact
                         attest_right_top_clause
                           (attest (CTime.toTime tct) (CTime.toTime sct))
                           (Time.controller (CTime.toTime tct'))
@@ -147,7 +147,7 @@ theorem attest_contradiction_preserving_of_top {D : LocalStateData.{u}} {t t' s 
                                 refine ⟨Time.controller (CTime.toTime sct), hst, ?_⟩
                                 simpa [Time.controller, CTime.toTime, CTime.botViewsWith_same]
                                   using hsource
-                              rw [dif_neg hbot_not, dif_pos hview]
+                              erw [dif_neg hbot_not, dif_pos hview]
                               rfl
                           | node p' x' hx' m =>
                               rename_i j p
@@ -184,7 +184,7 @@ theorem attest_contradiction_preserving_of_top {D : LocalStateData.{u}} {t t' s 
                                       have htopEq :
                                           attest (CTime.toTime (m p hst))
                                             (CTime.toTime (CTime.node p y hy n)) = top D p := by
-                                        simpa [attest_ctime_eq, CTime.toTime, top] using htop
+                                        exact htop
                                       have hg := Attests.attest_graph (D := D)
                                         (CTime.toTime (m p hst))
                                         (CTime.toTime (CTime.node p y hy n))
@@ -250,7 +250,7 @@ theorem attest_contradiction_preserving_of_top {D : LocalStateData.{u}} {t t' s 
                                         (t' := CTime.toTime (m p hst))
                                         (s := CTime.toTime sct)
                                         (s' := CTime.toTime (CTime.node p y hy n))
-                                        rfl rfl rfl (by simpa [CTime.toTime] using hsource)
+                                        rfl rfl rfl (by exact hsource)
                                       simpa [attest_self_time (CTime.toTime sct), hr]
                                         using hraw
                                     have hviewTop :
@@ -314,7 +314,7 @@ theorem attest_contradiction_preserving_of_top {D : LocalStateData.{u}} {t t' s 
                                       have htopEq :
                                           attest (CTime.toTime (l p hst))
                                             (CTime.toTime (CTime.node p y hy n)) = top D p := by
-                                        simpa [attest_ctime_eq, CTime.toTime, top] using htop
+                                        exact htop
                                       have hg := Attests.attest_graph (D := D)
                                         (CTime.toTime (l p hst))
                                         (CTime.toTime (CTime.node p y hy n))
@@ -378,7 +378,7 @@ theorem attest_contradiction_preserving_of_top {D : LocalStateData.{u}} {t t' s 
                                         (t' := CTime.toTime sct')
                                         (s := CTime.toTime (CTime.node p y hy n))
                                         (s' := CTime.toTime sct') rfl rfl rfl
-                                        (by simpa [CTime.toTime] using hsource)
+                                        (by exact hsource)
                                       simpa [hr, attest_self_time (CTime.toTime sct')]
                                         using hraw
                                     have hviewTop :
@@ -456,8 +456,7 @@ theorem attest_contradiction_preserving_of_top {D : LocalStateData.{u}} {t t' s 
                                               attest (CTime.toTime (l p hst))
                                                 (CTime.toTime (CTime.node p y hy n)) =
                                                 top D p := by
-                                            simpa [attest_ctime_eq, CTime.toTime, top]
-                                              using htopL
+                                            exact htopL
                                           have hg := Attests.attest_graph (D := D)
                                             (CTime.toTime (l p hst))
                                             (CTime.toTime (CTime.node p y hy n))
@@ -526,8 +525,7 @@ theorem attest_contradiction_preserving_of_top {D : LocalStateData.{u}} {t t' s 
                                                 attest (CTime.toTime (m p hst))
                                                   (CTime.toTime (CTime.node p z hz o)) =
                                                   top D p := by
-                                              simpa [attest_ctime_eq, CTime.toTime, top]
-                                                using htopR
+                                              exact htopR
                                             have hg := Attests.attest_graph (D := D)
                                               (CTime.toTime (m p hst))
                                               (CTime.toTime (CTime.node p z hz o))
@@ -597,7 +595,7 @@ theorem attest_contradiction_preserving_of_top {D : LocalStateData.{u}} {t t' s 
                                               (s := CTime.toTime (CTime.node p y hy n))
                                               (s' := CTime.toTime (CTime.node p z hz o))
                                               rfl rfl rfl
-                                              (by simpa [CTime.toTime] using hsource)
+                                              (by exact hsource)
                                             simpa [hrL, hrR] using hraw
                                           have hviewTop :
                                               Attests D
@@ -842,7 +840,7 @@ theorem locatedSemilattice_cross_node_attest_stored_view_eq_self
       CTime.toTime (CTime.node j x hx views) := by
   cases hslot : views i hij with
   | bot i =>
-      simpa [bot] using
+      exact
         (attest_right_bot_clause (D := D)
           (CTime.toTime (CTime.node j x hx views)) i (by
             intro h
@@ -894,7 +892,7 @@ theorem locatedSemilattice_cross_node_attest_stored_view_le_self
       (CTime.toTime (CTime.node j x hx views)) := by
   have hself := locatedSemilattice_cross_node_attest_stored_view_eq_self
     (D := D) (j := j) (i := i) hij (x := x) (hx := hx) (views := views)
-  simpa [locatedSemilattice, hself] using
+  simpa [locatedSemilattice_attest, hself] using
     ((locatedSemilattice D).le_refl (CTime.toTime (CTime.node j x hx views)))
 
 /--
@@ -928,8 +926,9 @@ theorem locatedSemilattice_attest_le_node_stored_view_of_controller
       cases hctrlr
       have hfirst :
           (locatedSemilattice D).attest (top D j) s = top D j := by
-        simpa [locatedSemilattice] using attest_left_top_clause (D := D) j s
-      exact False.elim (htop_not_le_target (by simpa [target, hfirst] using hle))
+        simpa [locatedSemilattice_attest,
+            locatedSemilattice_top] using attest_left_top_clause (D := D) j s
+      exact False.elim (htop_not_le_target (by rw [← hfirst]; exact hle))
   | consistent rct =>
       simp [Time.controller] at hctrlr
       cases hctrlr
@@ -941,15 +940,15 @@ theorem locatedSemilattice_attest_le_node_stored_view_of_controller
               cases hctrls
               have hfirst :
                   (locatedSemilattice D).attest (bot D j) (top D i) = top D j := by
-                simpa [locatedSemilattice, bot] using
+                simpa [locatedSemilattice_attest, locatedSemilattice_top, bot] using
                   attest_left_bot_cross_top_clause (D := D) hij
-              exact False.elim (htop_not_le_target (by simpa [target, hfirst] using hle))
+              exact False.elim (htop_not_le_target (by exact hle))
           | consistent sct =>
               simp [Time.controller] at hctrls
               cases hctrls
               cases sct with
               | bot i =>
-                  simpa [locatedSemilattice, LocatedSemilattice.botTime, bot] using
+                  exact
                     ((locatedSemilattice D).botTime_le
                       (p := i) (t := CTime.toTime (views i hij)) rfl)
               | node i y hy targetViews =>
@@ -959,7 +958,7 @@ theorem locatedSemilattice_attest_le_node_stored_view_of_controller
                         CTime.toTime
                           (CTime.crossBotNode j i hij
                             (CTime.node i y hy targetViews)) := by
-                    simpa [locatedSemilattice, bot] using
+                    simpa [locatedSemilattice_attest, locatedSemilattice_top, bot] using
                       attest_left_bot_cross_clause (D := D) hij
                         (CTime.node i y hy targetViews)
                   have hnode_le :
@@ -973,7 +972,7 @@ theorem locatedSemilattice_attest_le_node_stored_view_of_controller
                           ((locatedSemilattice D).attest (bot D j)
                             (CTime.toTime (CTime.node i y hy targetViews)))
                           target := by
-                      simpa [target, bot] using hle
+                      exact hle
                     rwa [hfirst] at hle'
                   have hslot_le :
                       (locatedSemilattice D).le
@@ -987,7 +986,9 @@ theorem locatedSemilattice_attest_le_node_stored_view_of_controller
                       (hy := CTime.botX_consistent D) (views := views)
                       (views' := CTime.botViewsWith hij
                         (CTime.node i y hy targetViews)) hnode_le
-                  simpa [CTime.botViewsWith_same] using hslot_le
+                  have h' := hslot_le
+                  simp [CTime.botViewsWith_same] at h'
+                  exact h'
       | node j y hy rviews =>
           cases s with
           | top si =>
@@ -997,16 +998,17 @@ theorem locatedSemilattice_attest_le_node_stored_view_of_controller
                   (locatedSemilattice D).attest
                       (CTime.toTime (CTime.node j y hy rviews)) (top D i) =
                     top D j := by
-                simpa [locatedSemilattice, top, Time.controller, CTime.toTime] using
+                simpa [locatedSemilattice_attest, locatedSemilattice_top, top, Time.controller,
+                    CTime.toTime] using
                   attest_right_top_clause (D := D)
                     (CTime.toTime (CTime.node j y hy rviews)) i
-              exact False.elim (htop_not_le_target (by simpa [target, hfirst] using hle))
+              exact False.elim (htop_not_le_target (by exact hle))
           | consistent sct =>
               simp [Time.controller] at hctrls
               cases hctrls
               cases sct with
               | bot i =>
-                  simpa [locatedSemilattice, LocatedSemilattice.botTime, bot] using
+                  exact
                     ((locatedSemilattice D).botTime_le
                       (p := i) (t := CTime.toTime (views i hij)) rfl)
               | node i z hz targetViews =>
@@ -1031,7 +1033,7 @@ theorem locatedSemilattice_attest_le_node_stored_view_of_controller
                             (CTime.toTime (CTime.node j y hy rviews))
                             (CTime.toTime (CTime.node i z hz targetViews)) =
                           top D j := by
-                      simpa [locatedSemilattice] using
+                      simpa [locatedSemilattice_attest, locatedSemilattice_top] using
                         attest_node_cross_top_clause (D := D) (j := j) (i := i)
                           (x := y) (y := z) (hx := hy) (hy := hz)
                           (l := rviews) (m := targetViews) hij hviewTop
@@ -1043,7 +1045,7 @@ theorem locatedSemilattice_attest_le_node_stored_view_of_controller
                                 (CTime.toTime (CTime.node j y hy rviews))
                                 (CTime.toTime (CTime.node i z hz targetViews)))
                               target := by
-                          simpa [target] using hle
+                          exact hle
                         rwa [hfirst] at hle'))
                   · let updated : CTime D i :=
                       Time.toCTimeOfNonTop
@@ -1079,7 +1081,7 @@ theorem locatedSemilattice_attest_le_node_stored_view_of_controller
                             (CTime.toTime (CTime.node i z hz targetViews)) =
                           CTime.toTime
                             (CTime.node j y hy (CTime.viewsUpdate rviews hij updated)) := by
-                      simpa [locatedSemilattice] using
+                      simpa [locatedSemilattice_attest, locatedSemilattice_top] using
                         attest_node_cross_consistent_clause (D := D) (j := j) (i := i)
                           (x := y) (y := z) (hx := hy) (hy := hz)
                           (l := rviews) (m := targetViews) hij hviewR
@@ -1094,7 +1096,7 @@ theorem locatedSemilattice_attest_le_node_stored_view_of_controller
                               (CTime.toTime (CTime.node j y hy rviews))
                               (CTime.toTime (CTime.node i z hz targetViews)))
                             target := by
-                        simpa [target] using hle
+                        exact hle
                       rwa [hfirst] at hle'
                     have hslot_le :
                         (locatedSemilattice D).le
@@ -1113,7 +1115,8 @@ theorem locatedSemilattice_attest_le_node_stored_view_of_controller
                         (locatedSemilattice D).le_right_attest_of_same_controller
                           (t := CTime.toTime (rviews i hij))
                           (s := CTime.toTime (CTime.node i z hz targetViews)) rfl
-                      simpa [locatedSemilattice, hupdated_toTime] using hright
+                      simpa [locatedSemilattice_attest, locatedSemilattice_top,
+                          hupdated_toTime] using hright
                     exact (locatedSemilattice D).le_trans htarget_le_updated hslot_le
 
 end LocalStateData

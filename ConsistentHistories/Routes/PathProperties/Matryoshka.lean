@@ -43,7 +43,7 @@ theorem matryoshka_cuts_lower_side {Time : Type v} {Ctrl : Type u} [LocatedSemil
         (T.paperIndex cutLower) := by
   rcases containsCut_center_hasCutMe hcut outerCenter hcenter with ⟨base, hcutMe⟩
   have hlabel : HasCutLabelAt Time (T.paperIndex outerLower) (T.get outerCenter) := by
-    exact ⟨CutFlagKind.cutMe, base, by simpa [hlower] using hcutMe⟩
+    exact ⟨CutFlagKind.cutMe, base, by rw [hlower]; exact hcutMe⟩
   exact inactiveBetween_implies_containsCut_center deriv
     ⟨hlower_inner, hinner_center, hlabel⟩
 

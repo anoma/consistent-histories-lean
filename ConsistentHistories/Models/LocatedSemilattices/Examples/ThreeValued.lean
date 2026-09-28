@@ -58,6 +58,10 @@ instance threeValueSemilattice : BoundedSemilattice ThreeValue where
   bot_le := ThreeValue.bot_le
   le_top := ThreeValue.le_top
 
+@[simp] theorem threeValueSemilattice_join (x y : ThreeValue) :
+    x ⊔ y = ThreeValue.join x y :=
+  rfl
+
 /-- Example 2.3.2: the order on `3`, i.e. `x ≤ y` iff `x = f`, `y = t`, or `x = y`. -/
 theorem threeValueSemilattice_le_iff (x y : ThreeValue) :
     x ≤ y ↔
@@ -73,7 +77,7 @@ theorem threeValueSemilattice_le_iff (x y : ThreeValue) :
 /-- Example 2.3.2: the bounded semilattice `3` is sequential. -/
 theorem threeValueSemilattice_sequential : threeValueSemilattice.Sequential := by
   intro x y
-  cases x <;> cases y <;> simp [threeValueSemilattice, ThreeValue.join]
+  cases x <;> cases y <;> decide
 
 /-- Example 2.3.2: the two controllers `Ctrl = {P, Q}`. -/
 inductive ThreeCtrl where
@@ -174,6 +178,18 @@ instance threeLocatedSemilattice : LocatedSemilattice ThreeTime ThreeCtrl where
       simp [RawContradicts, threeAttest, threeCrossAttest, ThreeValue.join, ThreeValue.neg]
         at hcontr ⊢
 
+@[simp] theorem threeLocatedSemilattice_attest (t s : ThreeTime) :
+    t # s = threeAttest t s :=
+  rfl
+
+@[simp] theorem threeLocatedSemilattice_controller (t : ThreeTime) :
+    controller t = t.1 :=
+  rfl
+
+@[simp] theorem threeLocatedSemilattice_top (ctrl : ThreeCtrl) :
+    threeLocatedSemilattice.top ctrl = (ctrl, ThreeValue.true) :=
+  rfl
+
 /-- Example 2.3.3: the monotone located semilattice `L = (Ctrl, Time, #, ctrl)`. -/
 instance simplerThreeLocatedSemilattice : LocatedSemilattice SimplerThreeTime ThreeCtrl where
   attest := simplerThreeAttest
@@ -234,6 +250,18 @@ instance simplerThreeLocatedSemilattice : LocatedSemilattice SimplerThreeTime Th
     cases hctrl'
     cases ctrl <;> cases param <;> cases x <;> cases x' <;> cases y <;> cases y' <;>
       simp [RawContradicts, simplerThreeAttest, ThreeValue.join] at hcontr ⊢
+
+@[simp] theorem simplerThreeLocatedSemilattice_attest (t s : SimplerThreeTime) :
+    t # s = simplerThreeAttest t s :=
+  rfl
+
+@[simp] theorem simplerThreeLocatedSemilattice_controller (t : SimplerThreeTime) :
+    controller t = t.ctrl :=
+  rfl
+
+@[simp] theorem simplerThreeLocatedSemilattice_top (ctrl : ThreeCtrl) :
+    simplerThreeLocatedSemilattice.top ctrl = ⟨ctrl, ThreeValue.true⟩ :=
+  rfl
 
 /-- Example 2.3.2: the cross-controller value of `b` and `f` is `t`. -/
 theorem three_cross_false :
@@ -343,23 +371,31 @@ theorem simpleLocatedSemilattice_sequential :
     threeLocatedSemilattice.Sequential := by
   intro ctrl
   intro t t'
-  rcases t with ⟨⟨ctrl_t, x⟩, ht⟩
-  rcases t' with ⟨⟨ctrl_t', y⟩, ht'⟩
-  cases ctrl <;> cases ctrl_t <;> cases ctrl_t' <;>
-    cases x <;> cases y <;>
-      simp [LocatedSemilattice.fiber, threeLocatedSemilattice, threeAttest,
-        ThreeValue.join] at ht ht' ⊢
+  have key : ∀ a b : ThreeTime, controller a = ctrl → controller b = ctrl →
+      a # b = a ∨ a # b = b ∨ a # b = top ctrl := by
+    rintro ⟨ctrl_t, x⟩ ⟨ctrl_t', y⟩ ht ht'
+    cases ctrl <;> cases ctrl_t <;> cases ctrl_t' <;>
+      cases x <;> cases y <;>
+        simp [threeAttest, ThreeValue.join] at ht ht' ⊢
+  rcases key t.1 t'.1 t.2 t'.2 with h | h | h
+  · exact Or.inl (Subtype.ext h)
+  · exact Or.inr (Or.inl (Subtype.ext h))
+  · exact Or.inr (Or.inr (Subtype.ext h))
 
 /-- Example 2.3.3: the monotone located semilattice `L` is sequential. -/
 theorem simplerLocatedSemilattice_sequential :
     simplerThreeLocatedSemilattice.Sequential := by
   intro ctrl
   intro t t'
-  rcases t with ⟨⟨ctrl_t, x⟩, ht⟩
-  rcases t' with ⟨⟨ctrl_t', y⟩, ht'⟩
-  cases ctrl <;> cases ctrl_t <;> cases ctrl_t' <;>
-    cases x <;> cases y <;>
-      simp [LocatedSemilattice.fiber, simplerThreeLocatedSemilattice, simplerThreeAttest,
-        ThreeValue.join] at ht ht' ⊢
+  have key : ∀ a b : SimplerThreeTime, controller a = ctrl → controller b = ctrl →
+      a # b = a ∨ a # b = b ∨ a # b = top ctrl := by
+    rintro ⟨ctrl_t, x⟩ ⟨ctrl_t', y⟩ ht ht'
+    cases ctrl <;> cases ctrl_t <;> cases ctrl_t' <;>
+      cases x <;> cases y <;>
+        simp [simplerThreeAttest, ThreeValue.join] at ht ht' ⊢
+  rcases key t.1 t'.1 t.2 t'.2 with h | h | h
+  · exact Or.inl (Subtype.ext h)
+  · exact Or.inr (Or.inl (Subtype.ext h))
+  · exact Or.inr (Or.inr (Subtype.ext h))
 
 end ConsistentHistories.Models.LocatedSemilattices.Examples

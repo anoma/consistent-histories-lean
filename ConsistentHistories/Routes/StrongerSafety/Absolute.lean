@@ -721,7 +721,7 @@ theorem cutPrefixData_postCut_initialPrefix_next_base_of_adjacent
   have hfirstPrefix : InitialPrefix firstCut deriv := by
     simpa [firstCut] using firstData.hprefix
   have hcenter : shared = T.paperIndex center := by
-    simpa [center, Prepath.paperIndex] using firstData.cutI_eq
+    exact firstData.cutI_eq
   have hactiveLower : firstCut.Active firstData.idxI := by
     simpa [firstCut] using
       ConsistentHistories.Routes.PathProperties.InactiveCuts.cutPrefixData_final_cut_lower_active
@@ -732,7 +732,7 @@ theorem cutPrefixData_postCut_initialPrefix_next_base_of_adjacent
     rfl
   have hactive :
       firstCut.Active (Fin.cast hfirstPrefix.length_eq.symm center) := by
-    simpa [hidx] using hactiveLower
+    exact hactiveLower
   exact
     ConsistentHistories.Routes.PathProperties.InactiveCuts.cutPrefixData_active_prefix_before_base
       secondData hfirstPrefix (center := center) hcenter hactive
@@ -845,7 +845,7 @@ theorem right_first_chain_link_time_contradicts_left_of_activeInconsistent
     ext
     rfl
   exact contradicts_symm (by
-    simpa [CircuitDerivation.swap_rightTime, hcast] using hswap)
+    exact hswap)
 
 /-!
 The bridge theorems above discharge the first pre-Cut contradiction obligation
@@ -1272,7 +1272,8 @@ theorem left_chain_start_cutTime_mem_cClosure
         (cutTimes.time pos))
     (by
       have hlast := left_chain_last_time_mem_cClosure cd chain
-      simpa [cutTimes.last_eq] using hlast)
+      simp [cutTimes.last_eq]
+      exact hlast)
     (by
       intro l hnextClosed
       rcases cutTimes.edge_attest_le l with ⟨_source, hle⟩
@@ -5906,9 +5907,9 @@ theorem mostRecentAttested_tuple_check
         (LocalStateData.CTime.toTime (LocalStateData.CTime.node p x hx views)) := by
     simpa [hlatest_eq] using hle_latest
   have hctrlr_time : LocalStateData.Time.controller r' = p := by
-    simpa [L, LocalStateData.locatedSemilattice] using hctrlr
+    exact hctrlr
   have hctrls_time : LocalStateData.Time.controller s' = p' := by
-    simpa [L, LocalStateData.locatedSemilattice, LocalStateData.CTime.toTime] using hctrls
+    exact hctrls
   exact
     LocalStateData.locatedSemilattice_attest_le_node_stored_view_of_controller
       (D := D) (j := p) (i := p') hp_ne

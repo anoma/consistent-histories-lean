@@ -479,7 +479,7 @@ theorem attest_self_time {D : LocalStateData.{u}} (t : Time D) : attest t t = t 
               Time.consistent (views k hkj) := by
         intro k hkj
         have ihk := ih k hkj
-        simpa [attest, attestAtTime, CTime.toTime] using ihk
+        exact ihk
       have hview_not :
           ¬ ∃ (k : D.Ctrl) (hkj : k ≠ j),
             (attestAtCTime (views k hkj) (Time.consistent (views k hkj))).1 = Time.top k := by
@@ -497,9 +497,9 @@ theorem attest_self_time {D : LocalStateData.{u}} (t : Time D) : attest t t = t 
               (CTime.toTime (CTime.node j x hx views)) =
             CTime.toTime (CTime.node j x hx views)
           simp only [attest, attestAtTime, attestAtCTime, CTime.toTime, Time.controller]
-          rw [dif_neg hxy]
           rw [dif_pos trivial]
-          rw [dif_neg hview]
+          erw [dif_neg hxy]
+          erw [dif_neg hview]
           simp [D.semilattice.join_idem]
           funext k hkj
           exact Time.toCTimeOfNonTop_eq_of_toTime
@@ -754,14 +754,16 @@ theorem eq_attest {D : LocalStateData.{u}} {t s r : Time D}
             ∃ (k' : D.Ctrl) (hk' : k' ≠ j),
               (attestAtCTime (l k' hk') (Time.consistent (m k' hk'))).1 = Time.top k' := by
           refine ⟨k, hkj, ?_⟩
-          simpa [attest_ctime_eq] using ih.symm
+          have h' := ih.symm
+          simp only [attest_ctime_eq] at h'
+          exact h'
         change
           Time.top j =
             attest (CTime.toTime (CTime.node j x hx l)) (CTime.toTime (CTime.node j y hy m))
         simp only [attest, attestAtTime, attestAtCTime, CTime.toTime, Time.controller]
-        rw [dif_neg hxy]
         rw [dif_pos trivial]
-        rw [dif_pos hviewTop]
+        erw [dif_neg hxy]
+        erw [dif_pos hviewTop]
   | node_same_consistent hxy hviews ihviews =>
       rename_i j x y hx hy l m r
       have hxy_not : ¬ D.semilattice.join x y = D.semilattice.top := hxy
@@ -773,23 +775,28 @@ theorem eq_attest {D : LocalStateData.{u}} {t s r : Time D}
         have hval :
             (attestAtCTime (l k hk) (Time.consistent (m k hk))).1 =
               CTime.toTime (r k hk) := by
-          simpa [attest_ctime_eq] using hkrel.symm
+          have h' := hkrel.symm
+          simp only [attest_ctime_eq] at h'
+          exact h'
         rw [hval] at htop
         cases htop
       change
         CTime.toTime (CTime.node j (D.semilattice.join x y) hxy r) =
           attest (CTime.toTime (CTime.node j x hx l)) (CTime.toTime (CTime.node j y hy m))
       simp only [attest, attestAtTime, attestAtCTime, CTime.toTime, Time.controller]
-      rw [dif_neg hxy_not]
       rw [dif_pos trivial]
-      rw [dif_neg hview_not]
+      erw [dif_neg hxy_not]
+      erw [dif_neg hview_not]
       simp
+      congr 1
       funext k hkj
       have hkrel := ihviews k hkj
       have hval :
           (attestAtCTime (l k hkj) (Time.consistent (m k hkj))).1 =
             CTime.toTime (r k hkj) := by
-        simpa [attest_ctime_eq] using hkrel.symm
+        have h' := hkrel.symm
+        simp only [attest_ctime_eq] at h'
+        exact h'
       exact (Time.toCTimeOfNonTop_eq_of_toTime
         (attestAtCTime (l k hkj) (Time.consistent (m k hkj)))
         (by
@@ -801,19 +808,23 @@ theorem eq_attest {D : LocalStateData.{u}} {t s r : Time D}
       have htop :
           (attestAtCTime (l i hij) (Time.consistent (CTime.node i y hy m))).1 =
             Time.top i := by
-        simpa [attest_ctime_eq] using ih.symm
+        have h' := ih.symm
+        simp only [attest_ctime_eq] at h'
+        exact h'
       change
         Time.top j =
           attest (CTime.toTime (CTime.node j x hx l)) (CTime.toTime (CTime.node i y hy m))
       simp only [attest, attestAtTime, attestAtCTime, CTime.toTime, Time.controller]
-      rw [dif_neg hij]
-      rw [dif_pos htop]
+      erw [dif_neg hij]
+      erw [dif_pos htop]
   | node_cross_consistent hij hview ih =>
       rename_i j i x y hx hy l m r
       have hval :
           (attestAtCTime (l i hij) (Time.consistent (CTime.node i y hy m))).1 =
             CTime.toTime r := by
-        simpa [attest_ctime_eq] using ih.symm
+        have h' := ih.symm
+        simp only [attest_ctime_eq] at h'
+        exact h'
       have hnot :
           (attestAtCTime (l i hij) (Time.consistent (CTime.node i y hy m))).1 ≠ Time.top i := by
         intro htop
@@ -823,8 +834,8 @@ theorem eq_attest {D : LocalStateData.{u}} {t s r : Time D}
         CTime.toTime (CTime.node j x hx (CTime.viewsUpdate l hij r)) =
           attest (CTime.toTime (CTime.node j x hx l)) (CTime.toTime (CTime.node i y hy m))
       simp only [attest, attestAtTime, attestAtCTime, CTime.toTime, Time.controller]
-      rw [dif_neg hij]
-      rw [dif_neg hnot]
+      erw [dif_neg hij]
+      erw [dif_neg hnot]
       simp
       have hr : Time.toCTimeOfNonTop
           (attestAtCTime (l i hij) (Time.consistent (CTime.node i y hy m))) hnot = r :=
@@ -840,13 +851,12 @@ theorem attest_graph {D : LocalStateData.{u}} (t s : Time D) :
     (motive_2 := fun _j t => ∀ s : Time D,
       Attests D (CTime.toTime t) s (attest (CTime.toTime t) s))
     (fun j s => by
-      simpa [attest] using Attests.left_top (D := D) j s)
+      exact Attests.left_top (D := D) j s)
     (fun _t ih s => ih s)
     (fun j s => by
       cases s with
       | top i =>
-          simpa [attest, attestAtTime, attestAtCTime, CTime.toTime, Time.controller] using
-            Attests.right_top (D := D) (bot D j) i
+          exact Attests.right_top (D := D) (bot D j) i
       | consistent s =>
           cases s with
           | bot =>
@@ -901,7 +911,9 @@ theorem attest_graph {D : LocalStateData.{u}} (t s : Time D) :
                     have hrelTop :
                         Attests D (CTime.toTime (l k hkj)) (CTime.toTime (m k hkj))
                           (Time.top k) := by
-                      simpa [attest_ctime_eq, htop] using hrel
+                      have h' := hrel
+                      simp only [attest_ctime_eq, htop] at h'
+                      exact h'
                     simpa [attest, attestAtTime, attestAtCTime, CTime.toTime,
                       Time.controller, hxy, hviewExists] using
                       Attests.node_same_view_top (D := D) (j := j) (k := k)
@@ -924,7 +936,9 @@ theorem attest_graph {D : LocalStateData.{u}} (t s : Time D) :
                           (Time.toCTimeOfNonTop
                             (attestAtCTime (l k hkj) (Time.consistent (m k hkj))) _))
                       rw [Time.toCTimeOfNonTop_toTime]
-                      simpa [attest_ctime_eq] using hrel
+                      have h' := hrel
+                      simp only [attest_ctime_eq] at h'
+                      exact h'
                     simpa [attest, attestAtTime, attestAtCTime, CTime.toTime,
                       Time.controller, hxy, hview, r] using
                       Attests.node_same_consistent (D := D) (j := j)
@@ -937,7 +951,9 @@ theorem attest_graph {D : LocalStateData.{u}} (t s : Time D) :
                   have hrelTop :
                       Attests D (CTime.toTime (l i hij))
                         (CTime.toTime (CTime.node i y hy m)) (Time.top i) := by
-                    simpa [attest_ctime_eq, htop] using hrel
+                    have h' := hrel
+                    simp only [attest_ctime_eq, htop] at h'
+                    exact h'
                   simpa [attest, attestAtTime, attestAtCTime, CTime.toTime, Time.controller,
                     hij, htop] using
                     Attests.node_cross_top (D := D) (j := j) (i := i)
@@ -958,7 +974,9 @@ theorem attest_graph {D : LocalStateData.{u}} (t s : Time D) :
                           (attestAtCTime (l i hij) (Time.consistent (CTime.node i y hy m)))
                           htop))
                     rw [Time.toCTimeOfNonTop_toTime]
-                    simpa [attest_ctime_eq] using hrel
+                    have h' := hrel
+                    simp only [attest_ctime_eq] at h'
+                    exact h'
                   simpa [attest, attestAtTime, attestAtCTime, CTime.toTime, Time.controller,
                     hij, htop, r] using
                     Attests.node_cross_consistent (D := D) (j := j) (i := i)
@@ -1615,11 +1633,11 @@ theorem attest_assoc_of_same_controller {D : LocalStateData.{u}} {t t' u : Time 
                       cases ht'u
                       simp only [attest, attestAtTime, attestAtCTime, CTime.toTime,
                         Time.controller]
-                      rw [dif_pos rfl, dif_pos trivial]
+                      erw [dif_pos rfl, dif_pos rfl]
                       by_cases hxy : D.semilattice.join x y = D.semilattice.top
                       · have hx_yz_top : D.semilattice.join x (D.semilattice.join y z) = D.semilattice.top :=
                           join_assoc_top_of_left hxy
-                        rw [dif_pos hxy]
+                        erw [dif_pos hxy]
                         by_cases hyz : D.semilattice.join y z = D.semilattice.top
                         · simp [hyz, attestAtCTime, Time.controller]
                         · by_cases hyzView :
@@ -1628,12 +1646,12 @@ theorem attest_assoc_of_same_controller {D : LocalStateData.{u}} {t t' u : Time 
                                   Time.top k
                           · simp [hyz, hyzView, attestAtCTime, Time.controller]
                           · simp [hyz, hyzView, hx_yz_top, attestAtCTime, Time.controller]
-                      · rw [dif_neg hxy]
+                      · erw [dif_neg hxy]
                         by_cases hxyView :
                             ∃ (k : D.Ctrl) (hkj : k ≠ j),
                               (attestAtCTime (l k hkj) (Time.consistent (m k hkj))).1 =
                                 Time.top k
-                        · rw [dif_pos hxyView]
+                        · erw [dif_pos hxyView]
                           by_cases hyz : D.semilattice.join y z = D.semilattice.top
                           · simp [hyz, attestAtCTime, Time.controller]
                           · by_cases hyzView :
@@ -1660,7 +1678,7 @@ theorem attest_assoc_of_same_controller {D : LocalStateData.{u}} {t t' u : Time 
                                     attest (CTime.toTime (l k hkj))
                                         (CTime.toTime (m k hkj)) =
                                       Time.top k := by
-                                  simpa [attest_ctime_eq, CTime.toTime] using hlm_top
+                                  exact hlm_top
                                 have hleft_top :
                                     attest
                                         (attest (CTime.toTime (l k hkj))
@@ -1710,7 +1728,7 @@ theorem attest_assoc_of_same_controller {D : LocalStateData.{u}} {t t' u : Time 
                               · simp [hyz, hyzView, hx_yz, attestAtCTime, Time.controller]
                               · simp [hyz, hyzView, hx_yz, hrightView, attestAtCTime,
                                   Time.controller]
-                        · rw [dif_neg hxyView]
+                        · erw [dif_neg hxyView]
                           by_cases hyz : D.semilattice.join y z = D.semilattice.top
                           · have hxy_z_top : D.semilattice.join (D.semilattice.join x y) z = D.semilattice.top :=
                               join_assoc_top_of_right hyz
@@ -1738,7 +1756,7 @@ theorem attest_assoc_of_same_controller {D : LocalStateData.{u}} {t t' u : Time 
                                     attest (CTime.toTime (m k hkj))
                                         (CTime.toTime (n k hkj)) =
                                       Time.top k := by
-                                  simpa [attest_ctime_eq, CTime.toTime] using hmn_top
+                                  exact hmn_top
                                 have hright_top :
                                     attest (CTime.toTime (l k hkj))
                                         (attest (CTime.toTime (m k hkj))
@@ -1788,7 +1806,7 @@ theorem attest_assoc_of_same_controller {D : LocalStateData.{u}} {t t' u : Time 
                               · simp [hyz, hyzView, hxy_z, attestAtCTime, Time.controller]
                               · simp [hyz, hyzView, hxy_z, hleftView, attestAtCTime,
                                   Time.controller]
-                            · rw [dif_neg hyz, dif_neg hyzView]
+                            · erw [dif_neg hyz, dif_neg hyzView]
                               simp only [attestAtCTime, Time.controller, CTime.toTime]
                               rw [dif_pos trivial, dif_pos trivial]
                               have view_assoc_value :
@@ -2029,7 +2047,7 @@ theorem attest_assoc_of_same_controller {D : LocalStateData.{u}} {t t' u : Time 
                                   ¬ D.semilattice.join x (D.semilattice.join y z) = D.semilattice.top := by
                                   intro htop
                                   exact hleftLocal (hlocal.trans htop)
-                                rw [dif_neg hleftLocal, dif_neg hrightLocal]
+                                erw [dif_neg hleftLocal, dif_neg hrightLocal]
                                 by_cases hleftView :
                                     ∃ k hkj,
                                       (attestAtCTime
@@ -2056,7 +2074,7 @@ theorem attest_assoc_of_same_controller {D : LocalStateData.{u}} {t t' u : Time 
                                         Time.top k := by
                                     intro hview
                                     exact hleftView (hview_iff.mpr hview)
-                                  rw [dif_neg hleftView, dif_neg hrightView]
+                                  erw [dif_neg hleftView, dif_neg hrightView]
                                   apply congrArg CTime.toTime
                                   apply CTime.node_ext hlocal
                                   intro k hkj

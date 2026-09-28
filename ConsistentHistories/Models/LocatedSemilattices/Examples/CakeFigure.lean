@@ -294,11 +294,15 @@ instance cakeController1Semilattice : BoundedSemilattice CakeController1Time whe
   bot_le := CakeController1Time.bot_le
   le_top := CakeController1Time.le_top
 
+@[simp] theorem cakeController1Semilattice_join (x y : CakeController1Time) :
+    x ⊔ y = CakeController1Time.join x y :=
+  rfl
+
 /-- Example 2.3.4: Controller 1's local chain is sequential. -/
 theorem cakeController1Semilattice_sequential :
     cakeController1Semilattice.Sequential := by
   intro x y
-  cases x <;> cases y <;> simp [cakeController1Semilattice, CakeController1Time.join]
+  cases x <;> cases y <;> decide
 
 /-- Example 2.3.4: Controller 1 has `a` before `d`. -/
 theorem cakeController1_a_le_d :
@@ -453,11 +457,15 @@ instance cakeController2Semilattice : BoundedSemilattice CakeController2Time whe
   bot_le := CakeController2Time.bot_le
   le_top := CakeController2Time.le_top
 
+@[simp] theorem cakeController2Semilattice_join (x y : CakeController2Time) :
+    x ⊔ y = CakeController2Time.join x y :=
+  rfl
+
 /-- Example 2.3.4: Controller 2's fork semilattice is sequential. -/
 theorem cakeController2Semilattice_sequential :
     cakeController2Semilattice.Sequential := by
   intro x y
-  cases x <;> cases y <;> simp [cakeController2Semilattice, CakeController2Time.join]
+  cases x <;> cases y <;> decide
 
 /-- Example 2.3.4: the fork state `b` precedes endpoint `c`. -/
 theorem cakeController2_b_le_c :
@@ -560,11 +568,15 @@ instance cakeController3Semilattice : BoundedSemilattice CakeController3Time whe
   bot_le := CakeController3Time.bot_le
   le_top := CakeController3Time.le_top
 
+@[simp] theorem cakeController3Semilattice_join (x y : CakeController3Time) :
+    x ⊔ y = CakeController3Time.join x y :=
+  rfl
+
 /-- Example 2.3.4: Controller 3's local chain is sequential. -/
 theorem cakeController3Semilattice_sequential :
     cakeController3Semilattice.Sequential := by
   intro x y
-  cases x <;> cases y <;> simp [cakeController3Semilattice, CakeController3Time.join]
+  cases x <;> cases y <;> decide
 
 /-- Example 2.3.4: Controller 3 has bottom before `g`. -/
 theorem cakeController3_bot_le_g :
@@ -657,7 +669,8 @@ private theorem cakeModel_contradiction_preserving_one_one
       (cakeModelAttest ⟨CakeFigureCtrl.one, x'⟩ ⟨CakeFigureCtrl.one, y'⟩) := by
   cases x <;> cases x' <;> cases y <;> cases y' <;>
     simp [RawContradicts, cakeModelAttest, cakeModelTop, cakeModelLocalTop,
-      CakeController1Time.join] at hcontr ⊢
+      CakeController1Time.join] at hcontr ⊢ <;>
+    cases hcontr
 
 private theorem cakeModel_contradiction_preserving_one_two
     (x x' : CakeController1Time) (y y' : CakeController2Time)
@@ -668,7 +681,8 @@ private theorem cakeModel_contradiction_preserving_one_two
       (cakeModelAttest ⟨CakeFigureCtrl.one, x'⟩ ⟨CakeFigureCtrl.two, y'⟩) := by
   cases x <;> cases x' <;> cases y <;> cases y' <;>
     simp [RawContradicts, cakeModelAttest, cakeModelTop, cakeModelLocalTop,
-      CakeController1Time.join, CakeController2Time.join] at hcontr ⊢
+      CakeController1Time.join, CakeController2Time.join] at hcontr ⊢ <;>
+    cases hcontr
 
 private theorem cakeModel_contradiction_preserving_one_three
     (x x' : CakeController1Time) (y y' : CakeController3Time)
@@ -679,7 +693,8 @@ private theorem cakeModel_contradiction_preserving_one_three
       (cakeModelAttest ⟨CakeFigureCtrl.one, x'⟩ ⟨CakeFigureCtrl.three, y'⟩) := by
   cases x <;> cases x' <;> cases y <;> cases y' <;>
     simp [RawContradicts, cakeModelAttest, cakeModelTop, cakeModelLocalTop,
-      CakeController1Time.join, CakeController3Time.join] at hcontr ⊢
+      CakeController1Time.join, CakeController3Time.join] at hcontr ⊢ <;>
+    cases hcontr
 
 private theorem cakeModel_contradiction_preserving_two_one
     (x x' : CakeController2Time) (y y' : CakeController1Time)
@@ -690,7 +705,8 @@ private theorem cakeModel_contradiction_preserving_two_one
       (cakeModelAttest ⟨CakeFigureCtrl.two, x'⟩ ⟨CakeFigureCtrl.one, y'⟩) := by
   cases x <;> cases x' <;> cases y <;> cases y' <;>
     simp [RawContradicts, cakeModelAttest, cakeModelTop, cakeModelLocalTop,
-      CakeController1Time.join, CakeController2Time.join] at hcontr ⊢
+      CakeController1Time.join, CakeController2Time.join] at hcontr ⊢ <;>
+    cases hcontr
 
 private theorem cakeModel_contradiction_preserving_two_two
     (x x' y y' : CakeController2Time)
@@ -701,7 +717,8 @@ private theorem cakeModel_contradiction_preserving_two_two
       (cakeModelAttest ⟨CakeFigureCtrl.two, x'⟩ ⟨CakeFigureCtrl.two, y'⟩) := by
   cases x <;> cases x' <;> cases y <;> cases y' <;>
     simp [RawContradicts, cakeModelAttest, cakeModelTop, cakeModelLocalTop,
-      CakeController2Time.join] at hcontr ⊢
+      CakeController2Time.join] at hcontr ⊢ <;>
+    cases hcontr
 
 private theorem cakeModel_contradiction_preserving_two_three
     (x x' : CakeController2Time) (y y' : CakeController3Time)
@@ -712,7 +729,8 @@ private theorem cakeModel_contradiction_preserving_two_three
       (cakeModelAttest ⟨CakeFigureCtrl.two, x'⟩ ⟨CakeFigureCtrl.three, y'⟩) := by
   cases x <;> cases x' <;> cases y <;> cases y' <;>
     simp [RawContradicts, cakeModelAttest, cakeModelTop, cakeModelLocalTop,
-      CakeController2Time.join, CakeController3Time.join] at hcontr ⊢
+      CakeController2Time.join, CakeController3Time.join] at hcontr ⊢ <;>
+    cases hcontr
 
 private theorem cakeModel_contradiction_preserving_three_one
     (x x' : CakeController3Time) (y y' : CakeController1Time)
@@ -723,7 +741,8 @@ private theorem cakeModel_contradiction_preserving_three_one
       (cakeModelAttest ⟨CakeFigureCtrl.three, x'⟩ ⟨CakeFigureCtrl.one, y'⟩) := by
   cases x <;> cases x' <;> cases y <;> cases y' <;>
     simp [RawContradicts, cakeModelAttest, cakeModelTop, cakeModelLocalTop,
-      CakeController1Time.join, CakeController3Time.join] at hcontr ⊢
+      CakeController1Time.join, CakeController3Time.join] at hcontr ⊢ <;>
+    cases hcontr
 
 private theorem cakeModel_contradiction_preserving_three_two
     (x x' : CakeController3Time) (y y' : CakeController2Time)
@@ -734,7 +753,8 @@ private theorem cakeModel_contradiction_preserving_three_two
       (cakeModelAttest ⟨CakeFigureCtrl.three, x'⟩ ⟨CakeFigureCtrl.two, y'⟩) := by
   cases x <;> cases x' <;> cases y <;> cases y' <;>
     simp [RawContradicts, cakeModelAttest, cakeModelTop, cakeModelLocalTop,
-      CakeController2Time.join, CakeController3Time.join] at hcontr ⊢
+      CakeController2Time.join, CakeController3Time.join] at hcontr ⊢ <;>
+    cases hcontr
 
 private theorem cakeModel_contradiction_preserving_three_three
     (x x' y y' : CakeController3Time)
@@ -745,7 +765,8 @@ private theorem cakeModel_contradiction_preserving_three_three
       (cakeModelAttest ⟨CakeFigureCtrl.three, x'⟩ ⟨CakeFigureCtrl.three, y'⟩) := by
   cases x <;> cases x' <;> cases y <;> cases y' <;>
     simp [RawContradicts, cakeModelAttest, cakeModelTop, cakeModelLocalTop,
-      CakeController3Time.join] at hcontr ⊢
+      CakeController3Time.join] at hcontr ⊢ <;>
+    cases hcontr
 
 /-- Example 2.3.4: a finite located semilattice realizing Figure 5. -/
 instance cakeModelLocatedSemilattice : LocatedSemilattice CakeModelTime CakeFigureCtrl where
@@ -888,14 +909,16 @@ theorem cakeFigure_realizable_as_located_semilattice :
           have hfig := CakeFigureNode.topPrecedes_same_controller hsource_middle
           cases source <;> cases middle <;>
             simp [L, cakeModelLocatedSemilattice, cakeModelTimeEmbed,
-              CakeFigureNode.controller] at hfig ⊢
+              CakeFigureNode.controller] at hfig ⊢ <;>
+            rfl
         have hctrl_middle_target :
             L.controller (cakeModelTimeEmbed middle) =
               L.controller (cakeModelTimeEmbed target) := by
           have hfig := CakeFigureNode.topPrecedes_same_controller hmiddle_target
           cases middle <;> cases target <;>
             simp [L, cakeModelLocatedSemilattice, cakeModelTimeEmbed,
-              CakeFigureNode.controller] at hfig ⊢
+              CakeFigureNode.controller] at hfig ⊢ <;>
+            rfl
         have hsource_middle_le :
             L.le (cakeModelTimeEmbed source) (cakeModelTimeEmbed middle) := by
           constructor

@@ -141,6 +141,11 @@ def replace {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Time Ctrl
       simpa
     · simpa [h] using T.consistent i
 
+instance replaceIndexDecidableEq {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Time Ctrl]
+    (T : Prepath Time) (j : T.Index) (t : Time) (hctrl hconsistent)
+    (i : (T.replace j t hctrl hconsistent).Index) : Decidable (i = j) :=
+  instDecidableEqFin T.length i j
+
 @[simp] theorem replace_length {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Time Ctrl] (T : Prepath Time)
     (j : T.Index) (t : Time) (hctrl hconsistent) :
     (T.replace j t hctrl hconsistent).length = T.length :=
@@ -166,8 +171,8 @@ theorem replace_get {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut T
     (T.replace j t hctrl hconsistent).get i =
       if _ : i = j then t else T.get i := by
   by_cases h : i = j
-  · simp [h, replace_get_same]
-  · simp [h, replace_get_ne T h t hctrl hconsistent]
+  · rw [dif_pos h]; simp [replace, get, h]
+  · rw [dif_neg h]; exact replace_get_ne T h t hctrl hconsistent
 
 /--
 Notation 4.1.2: in `T{j:=t}`, an index with the same paper index as `j`
@@ -2283,12 +2288,13 @@ theorem replace_inactiveBetween_iff_of_upper_ne {Time : Type v} {Ctrl : Type u} 
   constructor
   · intro hinactive
     exact ⟨hinactive.1, hinactive.2.1, by
-      simpa [Prepath.replace_paperIndex,
-        Prepath.replace_get_ne T hupper_ne_changed t hctrl hconsistent] using hinactive.2.2⟩
+      have h := hinactive.2.2
+      rw [Prepath.replace_get_ne T hupper_ne_changed t hctrl hconsistent] at h
+      exact h⟩
   · intro hinactive
     exact ⟨hinactive.1, hinactive.2.1, by
-      simpa [Prepath.replace_paperIndex,
-        Prepath.replace_get_ne T hupper_ne_changed t hctrl hconsistent] using hinactive.2.2⟩
+      rw [Prepath.replace_get_ne T hupper_ne_changed t hctrl hconsistent]
+      exact hinactive.2.2⟩
 
 /--
 Notation 4.1.2 and Definition 4.1.5: replacing an inactive center preserves the same
