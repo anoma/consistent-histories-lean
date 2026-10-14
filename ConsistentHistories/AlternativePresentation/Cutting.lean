@@ -227,6 +227,14 @@ instance cuttingFlagBoundedSemilattice : BoundedSemilattice ConcreteTime where
   bot_le := ConcreteTime.join_bot_left
   le_top := ConcreteTime.join_top_right
 
+@[simp] theorem cuttingFlagBoundedSemilattice_join (x y : ConcreteTime) :
+    x ⊔ y = ConcreteTime.join x y :=
+  rfl
+
+@[simp] theorem cuttingFlagBoundedSemilattice_top :
+    (⊤ : ConcreteTime) = ConcreteTime.top :=
+  rfl
+
 /-- Definition 7.7(1): `CuttingPoset` is a top-tree (a sequential bounded
 semilattice), as required for it to be the generated cutting-flag semilattice. -/
 theorem cuttingFlagBoundedSemilattice_isTopTree :
@@ -319,28 +327,24 @@ end CuttingFlag
 /-- Definition 3.2.1(1) on the concrete carrier of `CuttingPoset`: `nextindex_j ≤ cutme_j`. -/
 theorem cuttingFlag_next_le_cutMe (j : Nat) :
     (ConcreteTime.nextIndex j) ≤ (ConcreteTime.cutMe j) := by
-  simpa [CuttingPosetPoint.toConcrete, CuttingFlag.toConcrete, ConcreteTime.ofFlagKind]
-    using cuttingPosetPoint_le_sound (CuttingPosetPoint.next_le_cutMe j)
+  exact cuttingPosetPoint_le_sound (CuttingPosetPoint.next_le_cutMe j)
 
 /-- Definition 3.2.1(2) on the concrete carrier of `CuttingPoset`: `nextindex_j ≤ cutyou_j`. -/
 theorem cuttingFlag_next_le_cutYou (j : Nat) :
     (ConcreteTime.nextIndex j) ≤ (ConcreteTime.cutYou j) := by
-  simpa [CuttingPosetPoint.toConcrete, CuttingFlag.toConcrete, ConcreteTime.ofFlagKind]
-    using cuttingPosetPoint_le_sound (CuttingPosetPoint.next_le_cutYou j)
+  exact cuttingPosetPoint_le_sound (CuttingPosetPoint.next_le_cutYou j)
 
 /-- Definition 3.2.1(3) on the concrete carrier of `CuttingPoset`: `cutyou_j ≤ nextindex_i`
 when `i < j`. -/
 theorem cuttingFlag_cutYou_le_next {i j : Nat} (hij : i < j) :
     (ConcreteTime.cutYou j) ≤ (ConcreteTime.nextIndex i) := by
-  simpa [CuttingPosetPoint.toConcrete, CuttingFlag.toConcrete, ConcreteTime.ofFlagKind]
-    using cuttingPosetPoint_le_sound (CuttingPosetPoint.cutYou_le_next hij)
+  exact cuttingPosetPoint_le_sound (CuttingPosetPoint.cutYou_le_next hij)
 
 /-- Derived Figure 6 arrow on the concrete carrier of `CuttingPoset`: `cutyou_j ≤ cutme_i`
 when `i < j`, composing Definition 3.2.1(3) with (1). -/
 theorem cuttingFlag_cutYou_le_cutMe_of_lt {i j : Nat} (hij : i < j) :
     (ConcreteTime.cutYou j) ≤ (ConcreteTime.cutMe i) := by
-  simpa [CuttingPosetPoint.toConcrete, CuttingFlag.toConcrete, ConcreteTime.ofFlagKind]
-    using cuttingPosetPoint_le_sound (CuttingPosetPoint.cutYou_le_cutMe_of_lt hij)
+  exact cuttingPosetPoint_le_sound (CuttingPosetPoint.cutYou_le_cutMe_of_lt hij)
 
 /-- Definition 3.2.1(4): the same-index flags `cutme_j` and `cutyou_j` contradict, i.e.
 `cutme_j ⊔ cutyou_j = ⊤`. This is the characteristic cross-controller contradiction axiom

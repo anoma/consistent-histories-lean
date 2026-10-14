@@ -77,6 +77,10 @@ instance bureaucracyStateSemilattice : BoundedSemilattice BureaucracyState where
   bot_le := BureaucracyState.bot_le
   le_top := BureaucracyState.le_top
 
+@[simp] theorem bureaucracyStateSemilattice_join (x y : BureaucracyState) :
+    x ⊔ y = BureaucracyState.join x y :=
+  rfl
+
 /-- Example 2.3.6: the join of two natural states is their `max`. -/
 theorem bureaucracyState_nat_join_nat (n m : Nat) :
     BureaucracyState.join (BureaucracyState.nat n) (BureaucracyState.nat m) =
@@ -496,6 +500,22 @@ instance bureaucracyLocatedSemilattice : LocatedSemilattice BureaucracyTime Bure
             subst r
             exact bureaucracyAttest_any_right_top p p z
 
+@[simp] theorem bureaucracyLocatedSemilattice_attest (t s : BureaucracyTime) :
+    t # s = bureaucracyAttest t s :=
+  rfl
+
+@[simp] theorem bureaucracyLocatedSemilattice_controller (t : BureaucracyTime) :
+    controller t = t.1 :=
+  rfl
+
+@[simp] theorem bureaucracyLocatedSemilattice_bot (p : BureaucracyCtrl) :
+    bureaucracyLocatedSemilattice.bot p = (p, BureaucracyState.nat 0) :=
+  rfl
+
+@[simp] theorem bureaucracyLocatedSemilattice_top (p : BureaucracyCtrl) :
+    bureaucracyLocatedSemilattice.top p = (p, BureaucracyState.top) :=
+  rfl
+
 /-- Example 2.3.6: bureaucracy attestation is strongly contradiction-preserving. -/
 theorem bureaucracyLocatedSemilattice_strongly_contradiction_preserving
     {t t' s s' : BureaucracyTime} (htt' : t.fst = t'.fst) (hss' : s.fst = s'.fst)
@@ -610,11 +630,13 @@ theorem bureaucracyLocatedSemilattice_sequential :
           by_cases hnm : n <= m
           · exact Or.inr (Or.inl (by
               apply Subtype.ext
+              show bureaucracyAttest _ _ = _
               cases pt <;> simp [LocatedSemilattice.fiber, bureaucracyLocatedSemilattice,
                 bureaucracyAttest, Nat.max_eq_right hnm]))
           · have hmn : m <= n := Nat.le_of_not_ge hnm
             exact Or.inl (by
               apply Subtype.ext
+              show bureaucracyAttest _ _ = _
               cases pt <;> simp [LocatedSemilattice.fiber, bureaucracyLocatedSemilattice,
                 bureaucracyAttest, Nat.max_eq_left hmn])
 

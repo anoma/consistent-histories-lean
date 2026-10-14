@@ -33,7 +33,7 @@ theorem final_cut_upper_has_nextIndex {Time : Type v} {Ctrl : Type u} [LocatedSe
     HasCutLabelAt Time (T.paperIndex i)
       ((Derivation.root (Derivation.cut deriv hij hjk hk hj hi hconsistent)).get k) := by
   exact ⟨CutFlagKind.nextIndex, tk, by
-    simp [Derivation.root, Prepath.replace_get_same, Prepath.paperIndex,
+    simp [Derivation.root, Prepath.replace, Prepath.get, Prepath.paperIndex,
       LocatedSemilatticeWithCut.nextIndex]⟩
 
 /-- The center of a final Cut keeps the `cutMe` label aimed at the lower endpoint. -/
@@ -101,7 +101,7 @@ theorem final_cut_brackets_inactive {Time : Type v} {Ctrl : Type u} [LocatedSemi
     (Derivation.cut deriv hij hjk hk hj hi hconsistent).Inactive m := by
   exact
     ⟨k, i, him, hmk, CutFlagKind.nextIndex, tk, by
-      simp [Prepath.replace_get_same, Prepath.paperIndex,
+      simp [Prepath.replace, Prepath.get, Prepath.paperIndex,
         LocatedSemilatticeWithCut.nextIndex]⟩
 
 /--
@@ -149,7 +149,8 @@ theorem containsCut_brackets_inactive {Time : Type v} {Ctrl : Type u} [LocatedSe
       · subst upper
         have hnew := hasCutLabel_transfer_of_flag_eq hlabel hflag
         exact ⟨changed, lower, hlowm, hmup, by
-          simpa [Prepath.replace_get_same] using hnew⟩
+          simp [Prepath.replace_get_same]
+          exact hnew⟩
       · exact ⟨upper, lower, hlowm, hmup, kind, base, by
           rw [Prepath.replace_get_ne Tmid hsame tnew hlt.1.1.symm hconsistent]
           exact hlabel⟩
@@ -175,7 +176,7 @@ theorem containsCut_brackets_inactive {Time : Type v} {Ctrl : Type u} [LocatedSe
         exact
           ⟨changed, lower, hlowm, hmup, CutFlagKind.cutMe, baseNew, by
             subst introTarget
-            simp only [Prepath.replace_get_same, Prepath.paperIndex]
+            simp only [Prepath.replace, Prepath.get, Prepath.paperIndex]
             simp [LocatedSemilatticeWithCut.cutMe]⟩
       · exact
           ⟨upper, lower, hlowm, hmup, kind, oldBase, by
@@ -204,7 +205,7 @@ theorem containsCut_brackets_inactive {Time : Type v} {Ctrl : Type u} [LocatedSe
         exact
           ⟨changed, lower, hlowm, hmup, CutFlagKind.cutYou, baseNew, by
             subst introTarget
-            simp only [Prepath.replace_get_same, Prepath.paperIndex]
+            simp only [Prepath.replace, Prepath.get, Prepath.paperIndex]
             simp [LocatedSemilatticeWithCut.cutYou]⟩
       · exact
           ⟨upper, lower, hlowm, hmup, kind, oldBase, by
@@ -236,7 +237,7 @@ theorem containsCut_brackets_inactive {Time : Type v} {Ctrl : Type u} [LocatedSe
           simpa [hlow_eq_j] using hlowm
         exact
           ⟨k, i, Nat.lt_trans hij hj_lt_m, hmup, CutFlagKind.nextIndex, tk, by
-            simp [Prepath.replace_get_same, Prepath.paperIndex,
+            simp [Prepath.replace, Prepath.get, Prepath.paperIndex,
               LocatedSemilatticeWithCut.nextIndex]⟩
       · exact
           ⟨upper, lower, hlowm, hmup, kind, oldBase, by
@@ -320,7 +321,9 @@ theorem jump_implies_cut_exists {Time : Type v} {Ctrl : Type u} [LocatedSemilatt
       · subst k
         rcases hlabel with ⟨kind, base, hnew⟩
         have hnew_t : tnew = cutting kind (Tmid.paperIndex i) base := by
-          simpa [Prepath.replace_get_same] using hnew
+          have h' := hnew
+          simp [Prepath.replace_get_same] at h'
+          exact h'
         have hold : HasCutLabelAt Time (Tmid.paperIndex i) (Tmid.get changed) :=
           hasCutLabelAt_transfer_back_of_flag_eq changed hnew_t hconsistent hflag
         rcases ih (k := changed) (i := i)
@@ -432,7 +435,9 @@ theorem jump_implies_cut_exists {Time : Type v} {Ctrl : Type u} [LocatedSemilatt
       · have hold : HasCutLabelAt Time (Tmid.paperIndex queryI) (Tmid.get queryK) := by
           rcases hlabel with ⟨kind, base, hnew⟩
           exact ⟨kind, base, by
-            simpa [Prepath.replace_get_ne Tmid hkquery, Prepath.paperIndex] using hnew⟩
+            have h' := hnew
+            erw [Prepath.replace_get_ne Tmid hkquery, Prepath.paperIndex] at h'
+            exact h'⟩
         rcases ih (k := queryK) (i := queryI)
             (by simpa [Prepath.paperIndex] using hgap) hold with
           ⟨jWitness, hijWitness, hjkWitness, hcut⟩
@@ -631,7 +636,9 @@ theorem inactiveBetween_implies_containsCut_center {Time : Type v} {Ctrl : Type 
       · have hlabel_old : HasCutLabelAt Time (Tmid.paperIndex lower) (Tmid.get upper) := by
           rcases hlabel with ⟨kind, base, hnew⟩
           exact ⟨kind, base, by
-            simpa [Prepath.replace_get_ne Tmid hupper_changed, Prepath.paperIndex] using hnew⟩
+            have h' := hnew
+            erw [Prepath.replace_get_ne Tmid hupper_changed, Prepath.paperIndex] at h'
+            exact h'⟩
         rcases ih (upper := upper) (center := center) (lower := lower)
             ⟨hlower_center, hcenter_upper, hlabel_old⟩ with
           ⟨foundUpper, foundLower, hfoundUpper, hfoundLower, hfoundLower_center,
@@ -901,7 +908,7 @@ theorem cutLabel_target_weakens_of_initialPrefix {Time : Type v} {Ctrl : Type u}
       · subst changed
         have hlabelAtUpper :
             HasCutLabelAt Time (Tmid.paperIndex lowerMid) (Tmid.get upperMid) := by
-          simpa [upperMid] using hlabelMid
+          exact hlabelMid
         rcases hlabelAtUpper with ⟨kind, base, hshape⟩
         have hnew :
             HasCutLabelAt Time (Tmid.paperIndex lowerMid)
@@ -909,12 +916,16 @@ theorem cutLabel_target_weakens_of_initialPrefix {Time : Type v} {Ctrl : Type u}
           have htransferred :
               HasCutLabelAt Time (Tmid.paperIndex lowerMid) tnew :=
             hasCutLabel_transfer_of_flag_eq hshape hflag
-          simpa [finalPath, Prepath.replace_get_same] using htransferred
+          dsimp only [finalPath]
+          erw [Prepath.replace_get_same]
+          exact htransferred
         exact ⟨lowerMid, hlowerMid, hnew⟩
       · have hnew :
             HasCutLabelAt Time (Tmid.paperIndex lowerMid)
               (finalPath.get upperMid) := by
-          simpa [finalPath, upperMid, Prepath.replace_get_ne Tmid hsame] using hlabelMid
+          dsimp only [finalPath, upperMid]
+          erw [Prepath.replace_get_ne Tmid hsame]
+          exact hlabelMid
         exact ⟨lowerMid, hlowerMid, hnew⟩
   | cutMeIntro deriv hp changed target hshape hconsistent ih =>
       intro upper lower hlabel
@@ -929,7 +940,7 @@ theorem cutLabel_target_weakens_of_initialPrefix {Time : Type v} {Ctrl : Type u}
           _ = controller (↱ target baseNew) :=
             ((↱ target).controller_preserving baseNew).symm
           _ = controller (Tmid.get changed) := by
-            simpa [Tmid] using congrArg controller hshape.symm
+            exact congrArg controller hshape.symm
       let finalPath := Tmid.replace changed (⋊ target baseNew) hctrl hconsistent
       rcases ih hlabel with ⟨lowerMid, hlowerMid, hlabelMid⟩
       let upperMid : Tmid.Index := Fin.cast hp.length_eq upper
@@ -940,7 +951,7 @@ theorem cutLabel_target_weakens_of_initialPrefix {Time : Type v} {Ctrl : Type u}
       · subst changed
         have hlabelAtUpper :
             HasCutLabelAt Time (Tmid.paperIndex lowerMid) (Tmid.get upperMid) := by
-          simpa [upperMid] using hlabelMid
+          exact hlabelMid
         have htarget : Tmid.paperIndex lowerMid = target :=
           hasCutLabelAt_target_eq_of_eq_cutting hlabelAtUpper hshape
             (Tmid.consistent upperMid)
@@ -949,13 +960,14 @@ theorem cutLabel_target_weakens_of_initialPrefix {Time : Type v} {Ctrl : Type u}
               (finalPath.get upperMid) := by
           exact
             ⟨CutFlagKind.cutMe, baseNew, by
-              simp [finalPath, Prepath.replace_get_same, htarget,
+              simp [finalPath, Prepath.replace, Prepath.get, htarget,
                 LocatedSemilatticeWithCut.cutMe]⟩
         exact ⟨lowerMid, hlowerMid, hnew⟩
       · have hnew :
             HasCutLabelAt Time (Tmid.paperIndex lowerMid)
               (finalPath.get upperMid) := by
-          simpa [finalPath, upperMid, Prepath.replace_get_ne Tmid hsame] using hlabelMid
+          simp [finalPath, upperMid, Prepath.replace_get_ne Tmid hsame]
+          exact hlabelMid
         exact ⟨lowerMid, hlowerMid, hnew⟩
   | cutYouIntro deriv hp changed target hshape hconsistent ih =>
       intro upper lower hlabel
@@ -970,7 +982,7 @@ theorem cutLabel_target_weakens_of_initialPrefix {Time : Type v} {Ctrl : Type u}
           _ = controller (↱ target baseNew) :=
             ((↱ target).controller_preserving baseNew).symm
           _ = controller (Tmid.get changed) := by
-            simpa [Tmid] using congrArg controller hshape.symm
+            exact congrArg controller hshape.symm
       let finalPath := Tmid.replace changed (⋉ target baseNew) hctrl hconsistent
       rcases ih hlabel with ⟨lowerMid, hlowerMid, hlabelMid⟩
       let upperMid : Tmid.Index := Fin.cast hp.length_eq upper
@@ -981,7 +993,7 @@ theorem cutLabel_target_weakens_of_initialPrefix {Time : Type v} {Ctrl : Type u}
       · subst changed
         have hlabelAtUpper :
             HasCutLabelAt Time (Tmid.paperIndex lowerMid) (Tmid.get upperMid) := by
-          simpa [upperMid] using hlabelMid
+          exact hlabelMid
         have htarget : Tmid.paperIndex lowerMid = target :=
           hasCutLabelAt_target_eq_of_eq_cutting hlabelAtUpper hshape
             (Tmid.consistent upperMid)
@@ -990,13 +1002,14 @@ theorem cutLabel_target_weakens_of_initialPrefix {Time : Type v} {Ctrl : Type u}
               (finalPath.get upperMid) := by
           exact
             ⟨CutFlagKind.cutYou, baseNew, by
-              simp [finalPath, Prepath.replace_get_same, htarget,
+              simp [finalPath, Prepath.replace, Prepath.get, htarget,
                 LocatedSemilatticeWithCut.cutYou]⟩
         exact ⟨lowerMid, hlowerMid, hnew⟩
       · have hnew :
             HasCutLabelAt Time (Tmid.paperIndex lowerMid)
               (finalPath.get upperMid) := by
-          simpa [finalPath, upperMid, Prepath.replace_get_ne Tmid hsame] using hlabelMid
+          simp [finalPath, upperMid, Prepath.replace_get_ne Tmid hsame]
+          exact hlabelMid
         exact ⟨lowerMid, hlowerMid, hnew⟩
   | cut deriv hp hij hjk hk hj hi hconsistent ih =>
       intro upper lower hlabel
@@ -1011,7 +1024,7 @@ theorem cutLabel_target_weakens_of_initialPrefix {Time : Type v} {Ctrl : Type u}
           _ = controller (⋉ (Tmid.paperIndex cutCenter) tk) :=
             ((⋉ (Tmid.paperIndex cutCenter)).controller_preserving tk).symm
           _ = controller (Tmid.get cutUpper) := by
-            simpa [Tmid] using congrArg controller hk.symm
+            exact congrArg controller hk.symm
       let finalPath :=
         Tmid.replace cutUpper (↱ (Tmid.paperIndex cutLower) tk) hctrl
           hconsistent
@@ -1023,7 +1036,8 @@ theorem cutLabel_target_weakens_of_initialPrefix {Time : Type v} {Ctrl : Type u}
       by_cases hsame : upperMid = cutUpper
       · have hlabelAtUpper :
             HasCutLabelAt Time (Tmid.paperIndex lowerMid) (Tmid.get cutUpper) := by
-          simpa [upperMid, hsame] using hlabelMid
+          rw [← hsame]
+          exact hlabelMid
         have htarget : Tmid.paperIndex lowerMid = Tmid.paperIndex cutCenter :=
           hasCutLabelAt_target_eq_of_eq_cutting hlabelAtUpper hk (Tmid.consistent cutUpper)
         have hcutLower_le_lowerMid :
@@ -1037,13 +1051,17 @@ theorem cutLabel_target_weakens_of_initialPrefix {Time : Type v} {Ctrl : Type u}
               (finalPath.get upperMid) := by
           exact
             ⟨CutFlagKind.nextIndex, tk, by
-              simp [finalPath, hsame, Prepath.replace_get_same,
-                LocatedSemilatticeWithCut.nextIndex]⟩
+              dsimp only [finalPath]
+              rw [hsame]
+              erw [Prepath.replace_get_same]
+              simp [LocatedSemilatticeWithCut.nextIndex]⟩
         exact ⟨cutLower, Nat.le_trans hcutLower_le_lowerMid hlowerMid, hnew⟩
       · have hnew :
             HasCutLabelAt Time (Tmid.paperIndex lowerMid)
               (finalPath.get upperMid) := by
-          simpa [finalPath, upperMid, Prepath.replace_get_ne Tmid hsame] using hlabelMid
+          dsimp only [finalPath, upperMid]
+          erw [Prepath.replace_get_ne Tmid hsame]
+          exact hlabelMid
         exact ⟨lowerMid, hlowerMid, hnew⟩
 
 /--
@@ -1073,10 +1091,10 @@ theorem containsCut_upper_hasCutLabel_le_lower {Time : Type v} {Ctrl : Type u} [
     apply Fin.ext
     have hpaper : data.base.paperIndex data.idxK = T.paperIndex upper :=
       data.cutK_eq.symm.trans hupper.symm
-    exact Nat.succ.inj (by simpa [Prepath.paperIndex] using hpaper)
+    exact Nat.succ.inj (by exact hpaper)
   exact
-    ⟨lower, by simpa [data.cutI_eq] using hlower_le,
-      by simpa [dcut, hidxK_cast] using hlabel⟩
+    ⟨lower, by rw [data.cutI_eq]; exact hlower_le,
+      by erw [hidxK_cast] at hlabel; exact hlabel⟩
 
 /--
 Initial-prefix form of Lemma 5.2.2: if a prefix index
@@ -1227,12 +1245,14 @@ theorem containsCut_center_inactiveBetween_grows {Time : Type v} {Ctrl : Type u}
     apply Fin.ext
     have hpaper : data.base.paperIndex data.idxJ = T.paperIndex center := by
       exact data.cutJ_eq.symm.trans hcenter
-    exact Nat.succ.inj (by simpa [Prepath.paperIndex] using hpaper)
+    exact Nat.succ.inj (by exact hpaper)
   have hinactive : T.InactiveBetween upper center lower := by
-    simpa [hcenterCast] using hinactiveCast
+    have h' := hinactiveCast
+    erw [hcenterCast] at h'
+    exact h'
   exact
-    ⟨upper, lower, by simpa [data.cutK_eq] using hupper,
-      by simpa [data.cutI_eq] using hlower, hinactive⟩
+    ⟨upper, lower, by rw [data.cutK_eq]; exact hupper,
+      by rw [data.cutI_eq]; exact hlower, hinactive⟩
 
 /--
 Local initial-prefix support lemma: an inactive index remains inactive after
@@ -1270,8 +1290,10 @@ theorem cutPrefixData_center_inactive {Time : Type v} {Ctrl : Type u} [LocatedSe
     apply Fin.ext
     have hpaper : data.base.paperIndex data.idxJ = T.paperIndex center := by
       exact data.cutJ_eq.symm.trans hcenter
-    exact Nat.succ.inj (by simpa [Prepath.paperIndex] using hpaper)
-  simpa [hcenterCast] using hinactiveCast
+    exact Nat.succ.inj (by exact hpaper)
+  have h' := hinactiveCast
+  erw [hcenterCast] at h'
+  exact h'
 
 /--
 Post-Cut center projection for a prefix-packaged Cut: in the derivation ending
@@ -1321,7 +1343,7 @@ theorem cutPrefixData_active_prefix_before_base {Time : Type v} {Ctrl : Type u} 
           Fin.cast hpref.length_eq.symm center := by
       apply Fin.ext
       exact hcenterVal
-    exact hactive (by simpa [hidx] using hinactive)
+    exact hactive (by erw [hidx] at hinactive; exact hinactive)
   rcases InitialPrefix.comparable hpref hcutToFinal with hprefToCut | hcutToPref
   · rcases InitialPrefix.comparable hprefToCut hbaseToCut with hprefToBase | hbaseToPref
     · exact hprefToBase

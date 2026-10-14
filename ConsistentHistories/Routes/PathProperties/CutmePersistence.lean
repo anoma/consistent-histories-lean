@@ -200,7 +200,8 @@ theorem cutme_forever {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut
         simpa [hsame] using hform_old_jmid
       have hform_new := flagOf_transfer_hasForm cuttingFlagSet
         (cutting_mem CutFlagKind.cutMe target) hform_old_changed hflag
-      simpa [Prepath.replace, Prepath.get, hsame] using hform_new.2
+      simp [Prepath.replace, Prepath.get, hsame]
+      exact hform_new.2
     · have hget := Prepath.replace_get_ne Tmid hsame tnew hlt.1.1.symm hconsistent
       rw [hget]
       exact hprev
@@ -366,7 +367,8 @@ theorem containsCut_center_hasCutMe {Time : Type v} {Ctrl : Type u} [LocatedSemi
           simpa [hsame] using hform_old_center
         have hform_new := flagOf_transfer_hasForm cuttingFlagSet
           (cutting_mem CutFlagKind.cutMe cutI) hform_old_changed hflag
-        simpa [Prepath.replace, Prepath.get, hsame] using hform_new.2
+        simp [Prepath.replace, Prepath.get, hsame]
+        exact hform_new.2
       · rw [Prepath.replace_get_ne Tmid hsame tnew hlt.1.1.symm hconsistent]
         exact hprev
   | cutMeIntro h changed introTarget hshape hconsistent ih =>

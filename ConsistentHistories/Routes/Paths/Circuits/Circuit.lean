@@ -202,7 +202,7 @@ theorem replaceBoth_controller_eq_before_last
             (Fin.cast c.length_eq i)) =
         controller (c.right.1.get (Fin.cast c.length_eq i)) := by
     by_cases hidx : Fin.cast c.length_eq i = rightIdx
-    · rw [hidx]
+    · erw [hidx]
       exact Prepath.replace_get_same_controller c.right.1 rightIdx rightTime
         hrightCtrl hrightCons
     · exact Prepath.replace_get_ne_controller c.right.1 hidx rightTime hrightCtrl

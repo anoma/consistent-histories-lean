@@ -352,7 +352,7 @@ theorem current_val_le_next_of_lt {Time : Type v} {Ctrl : Type u} [LocatedSemila
       (⟨p.val + 1, Nat.succ_lt_succ p.isLt⟩ :
           Fin (chain.edgeCount + 1)).val ≤
         (Fin.castSucc l : Fin (chain.edgeCount + 1)).val := by
-    simpa using hpl
+    exact hpl
   have hmono :=
     chain.node_val_anti_mono
       (a := ⟨p.val + 1, Nat.succ_lt_succ p.isLt⟩)
@@ -796,7 +796,7 @@ theorem cutPrefixData_pair_upper_inconsistent_of_target_lt
         leftData.base.paperIndex leftData.idxJ := leftData.cutJ_eq
     have hval : upper.val = leftData.idxJ.val :=
       Nat.succ.inj (by simpa [Prepath.paperIndex] using hpaper)
-    simpa [prefUpper] using hval
+    exact hval
   have hrightUpper_val : upper.val = rightUpper.val := by
     exact congrArg Fin.val hupper_eq
   have hrightIdxK_val : rightData.idxK.val = rightUpper.val := by
@@ -812,11 +812,13 @@ theorem cutPrefixData_pair_upper_inconsistent_of_target_lt
       _ = rightUpper.val := hrightUpper_val
       _ = rightData.idxK.val := hrightIdxK_val.symm
   have hleftActive : pref.leftDerivation.Active prefUpper := by
-    simpa [pref, prefUpper, hleftIdx] using
+    simp [pref, prefUpper, hleftIdx]
+    exact
       ConsistentHistories.Routes.PathProperties.InactiveCuts.cutPrefixData_pre_cut_center_active
         leftData
   have hrightActive : pref.rightDerivation.Active (pref.rightIndex prefUpper) := by
-    simpa [pref, prefUpper, hrightIdx, rightCutDeriv] using
+    simp [pref, prefUpper, hrightIdx, rightCutDeriv]
+    exact
       ConsistentHistories.Routes.PathProperties.InactiveCuts.cutPrefixData_final_cut_upper_active
         rightData
   have hdoublyActive : pref.DoublyActive prefUpper :=
@@ -827,8 +829,8 @@ theorem cutPrefixData_pair_upper_inconsistent_of_target_lt
           (leftData.tj # (⋉ (leftData.base.paperIndex leftData.idxJ)
               leftData.tk)) := by
     have hshape := leftData.hj
-    simpa [pref, prefUpper, hleftIdx, CircuitDerivation.leftTime,
-      leftData.cutI_eq] using hshape
+    simp [pref, prefUpper, hleftIdx, CircuitDerivation.leftTime, leftData.cutI_eq]
+    exact hshape
   have hrightShape :
       pref.rightTime prefUpper = ↱ rightCutI rightData.tk := by
     have hshape :
@@ -836,8 +838,8 @@ theorem cutPrefixData_pair_upper_inconsistent_of_target_lt
           ↱ (rightData.base.paperIndex rightData.idxI)
             rightData.tk := by
       simp [rightCutDeriv, Derivation.root, Prepath.replace_get_same]
-    simpa [pref, prefUpper, hrightIdx, CircuitDerivation.rightTime,
-      rightCutDeriv, rightData.cutI_eq] using hshape
+    simp [pref, prefUpper, hrightIdx, CircuitDerivation.rightTime, rightCutDeriv, rightData.cutI_eq]
+    exact hshape
   have hbeforePref : pref.circuit.left.1.paperIndex prefUpper < pref.circuit.length := by
     have hpaper := pref.prefixIndex_paperIndex hpref upper
     have hlen : pref.circuit.length = cd.circuit.length := by
@@ -887,7 +889,7 @@ theorem left_chain_right_inactive_upper_inconsistentIndex
       exact Nat.lt_of_lt_of_le hcurrent_upper
         (Nat.succ_le_of_lt linkUpper.isLt)
     have hcurrent_eq : chain.current firstLink = start := by
-      simpa [current, first] using chain.first_eq_start
+      exact chain.first_eq_start
     simpa [Circuit.length, hcurrent_eq] using hcurrent
   have hupper_before :
       cd.circuit.left.1.paperIndex upper < cd.circuit.length := by
@@ -1111,12 +1113,12 @@ theorem cutPrefixData_adjacent_cuts_lower_center_inconsistent
       pref.circuit.left.1.paperIndex leftData.idxI < pref.circuit.length := by
     have hlt : leftData.idxI.val + 1 < leftData.base.length :=
       Nat.lt_of_le_of_lt (Nat.succ_le_of_lt leftData.hij) leftData.idxJ.isLt
-    simpa [pref, leftCutDeriv, Circuit.length, Prepath.paperIndex] using hlt
+    exact hlt
   have hcenter_before :
       pref.circuit.left.1.paperIndex leftData.idxJ < pref.circuit.length := by
     have hlt : leftData.idxJ.val + 1 < leftData.base.length :=
       Nat.lt_of_le_of_lt (Nat.succ_le_of_lt leftData.hjk) leftData.idxK.isLt
-    simpa [pref, leftCutDeriv, Circuit.length, Prepath.paperIndex] using hlt
+    exact hlt
   let leftInner : Time :=
     leftData.tj # (⋉ (leftData.base.paperIndex leftData.idxJ) leftData.tk)
   let rightInner : Time :=
@@ -1250,15 +1252,17 @@ theorem cutPrefixData_adjacent_cuts_lower_center_inconsistent
       (ConsistentHistories.Routes.PathProperties.InactiveCuts.final_cut_endpoints_active
         leftData.baseDeriv leftData.hij leftData.hjk leftData.hk leftData.hj
         leftData.hi leftData.hconsistent).2
-    simpa [pref, leftCutDeriv] using hactive
+    exact hactive
   have hrightActive :
       pref.rightDerivation.Active (pref.rightIndex leftData.idxI) := by
     have hactive :=
       ConsistentHistories.Routes.PathProperties.InactiveCuts.cutPrefixData_pre_cut_center_active
         rightData
-    simpa [pref, hrightShared] using hactive
+    simp [pref, hrightShared]
+    exact hactive
   refine ⟨pref, hpref, ?_, ?_⟩
-  · simpa [prefShared, hshared_left] using And.intro hleftActive hrightActive
+  · simp [prefShared, hshared_left]
+    exact And.intro hleftActive hrightActive
   · simpa [prefShared, hshared_left] using hcontrShared
 
 /--
@@ -1426,15 +1430,14 @@ theorem right_chain_left_active_of_least_inconsistent
     cd.swap_rightCompatibleUpTo hcompat
   have hleftStartSwap :
       cd.swap.rightDerivation.Active (cd.swap.rightIndex start) := by
-    simpa [CircuitDerivation.swap, cd.swap_rightIndex start] using hleftActiveStart
+    exact hleftActiveStart
   have hactiveSwap :
       ∀ l : Fin chain.edgeCount,
         cd.swap.rightDerivation.Active (cd.swap.rightIndex (chain.current l)) :=
     left_chain_right_active_of_least_inconsistent
       cd.swap hleast chain hcompatSwap hleftStartSwap
   intro l
-  simpa [CircuitDerivation.swap, cd.swap_rightIndex (chain.current l)]
-    using hactiveSwap l
+  exact hactiveSwap l
 
 /--
 Conditional chain-active consequence: if no
@@ -1478,7 +1481,7 @@ theorem right_chain_left_active_of_no_inconsistentIndex
     cd.swap_rightCompatibleUpTo hcompat
   have hleftStartSwap :
       cd.swap.rightDerivation.Active (cd.swap.rightIndex start) := by
-    simpa [CircuitDerivation.swap, cd.swap_rightIndex start] using hleftActiveStart
+    exact hleftActiveStart
   have hnoInconsistentSwap :
       ∀ upper : cd.swap.Index, upper.val ≤ start.val →
         ¬ cd.swap.InconsistentIndex upper := by
@@ -1487,16 +1490,14 @@ theorem right_chain_left_active_of_no_inconsistentIndex
         cd.swap.swap.InconsistentIndex (cd.swap.rightIndex upper) :=
       cd.swap.swap_inconsistentIndex hinconsistentSwap
     exact hnoInconsistent upper hupper (by
-      simpa [CircuitDerivation.swap, Circuit.swap, cd.swap_rightIndex upper]
-        using hswapBack)
+      exact hswapBack)
   have hactiveSwap :
       ∀ l : Fin chain.edgeCount,
         cd.swap.rightDerivation.Active (cd.swap.rightIndex (chain.current l)) :=
     left_chain_right_active_of_no_inconsistentIndex
       cd.swap chain hcompatSwap hleftStartSwap hnoInconsistentSwap
   intro l
-  simpa [CircuitDerivation.swap, cd.swap_rightIndex (chain.current l)]
-    using hactiveSwap l
+  exact hactiveSwap l
 
 /--
 Conditional chain-active consequence reindexed by
@@ -1700,7 +1701,7 @@ theorem start_paperIndex_lt_length {Time : Type v} {Ctrl : Type u} [LocatedSemil
   let firstLink : Fin chain.edgeCount := ⟨0, chain.edgeCount_pos⟩
   have hcurrent := chain.current_paperIndex_lt_length firstLink
   have hcurrent_eq : chain.current firstLink = start := by
-    simpa [current, first] using chain.first_eq_start
+    exact chain.first_eq_start
   simpa [hcurrent_eq] using hcurrent
 
 /--
@@ -1775,22 +1776,20 @@ theorem right_chain_left_active_of_no_final_contradiction
     cd.swap_rightCompatibleUpTo hcompat
   have hleftStartSwap :
       cd.swap.rightDerivation.Active (cd.swap.rightIndex start) := by
-    simpa [CircuitDerivation.swap, cd.swap_rightIndex start] using hleftActiveStart
+    exact hleftActiveStart
   have hnoContrSwap :
       ∀ upper : cd.swap.Index, upper.val ≤ start.val →
         ¬ (cd.swap.leftTime upper) 🗲 (cd.swap.rightTime upper) := by
     intro upper hupper hcontr
     exact hnoContr upper hupper (by
-      simpa [CircuitDerivation.leftTime, CircuitDerivation.rightTime,
-        CircuitDerivation.swap, cd.swap_rightIndex upper] using hcontr)
+      exact hcontr)
   have hactiveSwap :
       ∀ l : Fin chain.edgeCount,
         cd.swap.rightDerivation.Active (cd.swap.rightIndex (chain.current l)) :=
     left_chain_right_active_of_no_final_contradiction
       cd.swap chain hcompatSwap hleftStartSwap hnoContrSwap
   intro l
-  simpa [CircuitDerivation.swap, cd.swap_rightIndex (chain.current l)]
-    using hactiveSwap l
+  exact hactiveSwap l
 
 /--
 Final-time conditional chain-active consequence, reindexed by paper
@@ -1978,7 +1977,7 @@ def single {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Time Ctrl]
           simp [node, hlfin]
         have hnextNode : node ⟨l.val + 1, Nat.succ_lt_succ l.isLt⟩ = next := by
           simp [node]
-        exact ⟨upper, by simpa [hcurrent, hnextNode] using hcut⟩ }
+        exact ⟨upper, by rw [hcurrent, hnextNode]; exact hcut⟩ }
 
 /-- One Cut into the first node of an existing chain prepends a chain edge. -/
 def cons {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWithCut Time Ctrl] {T : Prepath Time} {deriv : Derivation Time T}

@@ -43,10 +43,10 @@ theorem attest_lower_bound {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWi
     exact hcutJ.symm.trans hcenter
   have hidxI_cast : Fin.cast hprefix.length_eq idxI = lower := by
     apply Fin.ext
-    exact Nat.succ.inj (by simpa [Prepath.paperIndex] using hidxI_paper)
+    exact Nat.succ.inj (by exact hidxI_paper)
   have hidxJ_cast : Fin.cast hprefix.length_eq idxJ = center := by
     apply Fin.ext
-    exact Nat.succ.inj (by simpa [Prepath.paperIndex] using hidxJ_paper)
+    exact Nat.succ.inj (by exact hidxJ_paper)
   have hshape :
       (Derivation.root dcut).get idxI = ti # centerTime := by
     have hi_ne_k : idxI ≠ idxK := by
@@ -64,11 +64,14 @@ theorem attest_lower_bound {Time : Type v} {Ctrl : Type u} [LocatedSemilatticeWi
     have hle := InitialPrefix.times_increase hprefix idxI
     change (dcut.root.get idxI) ≼ (T.get (Fin.cast hprefix.length_eq idxI)) at hle
     rw [hshape] at hle
-    simpa [hidxI_cast] using hle
+    erw [hidxI_cast] at hle
+    exact hle
   have hcenterBound := InitialPrefix.times_increase hprefix idxJ
   have hcenterController :
       controller centerTime = controller (T.get center) := by
-    simpa [centerTime, dcut, hidxJ_cast] using hcenterBound.1
+    have h := hcenterBound.1
+    erw [hidxJ_cast] at h
+    exact h
   exact ⟨ti, centerTime, hlowerBound, hcenterController⟩
 
 end CutPrefixWitness

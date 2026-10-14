@@ -185,9 +185,9 @@ theorem cutPair_post_cut_indices_before_last_and_controller_eq
           controller (cd.rightTime i) :=
     cutPair_pre_cut_indices_before_last_and_controller_eq cd hij hjk
   have hi_before : cutCd.circuit.left.1.paperIndex i < cutCd.circuit.length := by
-    simpa [cutCd, CircuitDerivation.cutPair, Prepath.replace_paperIndex] using hpre.1
+    exact hpre.1
   have hj_before : cutCd.circuit.left.1.paperIndex j < cutCd.circuit.length := by
-    simpa [cutCd, CircuitDerivation.cutPair, Prepath.replace_paperIndex] using hpre.2.1
+    exact hpre.2.1
   exact
     ⟨hi_before, hj_before, cutCd.controller_eq_before_last j hj_before,
       cutCd.controller_eq_before_last i hi_before⟩
@@ -260,17 +260,17 @@ theorem cutPair_lower_activeInconsistentIndex
     rfl
   have hinactive : cutCd.Inactive j := by
     constructor
-    · simpa [cutCd, CircuitDerivation.cutPair] using hcore.1
+    · exact hcore.1
     · rw [hrightIndex_center]
-      simpa [cutCd, CircuitDerivation.cutPair] using hcore.2.1
+      exact hcore.2.1
   have hdoublyActive : cutCd.DoublyActive i := by
     constructor
-    · simpa [cutCd, CircuitDerivation.cutPair] using hcore.2.2.1
+    · exact hcore.2.2.1
     · rw [hrightIndex_lower]
-      simpa [cutCd, CircuitDerivation.cutPair] using hcore.2.2.2.1
+      exact hcore.2.2.2.1
   have hcontrLower :
       (cutCd.leftTime i) 🗲 (cutCd.rightTime i) := by
-    rw [CircuitDerivation.rightTime, hrightIndex_lower]
+    erw [CircuitDerivation.rightTime, hrightIndex_lower]
     simpa [cutCd, CircuitDerivation.cutPair, CircuitDerivation.leftTime]
       using hcore.2.2.2.2
   exact
@@ -447,12 +447,12 @@ theorem cutPrefix_pair_lower_inconsistent_of_center_contradiction
   have hcenterRight : rightData.idxJ = preCd.rightIndex leftData.idxJ := by
     apply Fin.ext
     exact Nat.succ.inj (by
-      simpa [preCd, CircuitDerivation.rightIndex, Prepath.paperIndex] using
+      exact
         hcenterPaper.symm)
   have hlowerRight : rightData.idxI = preCd.rightIndex leftData.idxI := by
     apply Fin.ext
     exact Nat.succ.inj (by
-      simpa [preCd, CircuitDerivation.rightIndex, Prepath.paperIndex] using
+      exact
         hlowerPaper.symm)
   have hcutPrefix :
       (preCd.cutPair leftData.hij leftData.hjk rightData.hij rightData.hjk
@@ -461,18 +461,18 @@ theorem cutPrefix_pair_lower_inconsistent_of_center_contradiction
     exact ⟨leftData.hprefix, rightData.hprefix⟩
   have hcontrCenterPre :
       (preCd.leftTime leftData.idxJ) 🗲 (preCd.rightTime leftData.idxJ) := by
-    rw [CircuitDerivation.rightTime, ← hcenterRight]
-    simpa [preCd, CircuitDerivation.leftTime, CircuitDerivation.rightTime]
-      using hcontrCenter
+    erw [CircuitDerivation.rightTime, ← hcenterRight]
+    exact hcontrCenter
   let lower : cd.Index :=
     Fin.cast (InitialPrefix.length_eq leftData.hprefix) leftData.idxI
   have hlower_center : lower.val < center.val := by
     have hcenter_val : center.val = leftData.idxJ.val := by
       exact Nat.succ.inj (by
         simpa [Prepath.paperIndex] using leftData.cutJ_eq)
-    simpa [lower, hcenter_val] using leftData.hij
+    simp [lower, hcenter_val]
+    exact leftData.hij
   have hinconsistent_lower : cd.InconsistentIndex lower := by
-    simpa [lower] using
+    exact
       cutPair_lower_inconsistentIndex_of_initialPrefix (pref := preCd) (cd := cd)
         leftData.hij leftData.hjk rightData.hij rightData.hjk leftData.hk
         leftData.hj leftData.hi leftData.hconsistent rightData.hk
@@ -969,10 +969,10 @@ theorem cutPrefixData_pair_preCircuit_doublyActive
     exact Nat.succ.inj (by simpa [preCd, preCenter, Prepath.paperIndex] using hpaper)
   refine ⟨preCd, hprefix, ?_⟩
   constructor
-  · simpa [preCd, preCenter, hleftCenter] using
-      cutPrefixData_pre_cut_center_active leftData
-  · simpa [preCd, preCenter, hrightCenter] using
-      cutPrefixData_pre_cut_center_active rightData
+  · simp [preCd, preCenter, hleftCenter]
+    exact cutPrefixData_pre_cut_center_active leftData
+  · simp [preCd, preCenter, hrightCenter]
+    exact cutPrefixData_pre_cut_center_active rightData
 
 /--
 Inactive case of Proposition 5.5.2: synchronized pre-Cut prefix data form a
@@ -1035,18 +1035,20 @@ theorem cutPrefixData_pair_lower_inconsistent_of_preCircuit_center_contradiction
     simpa [hleftCenter] using hrightCenter
   have hdoublyActive : preCd.DoublyActive preCenter := by
     constructor
-    · simpa [preCd, preCenter, hleftCenter] using
-        cutPrefixData_pre_cut_center_active leftData
-    · simpa [preCd, preCenter, hrightCenter] using
-        cutPrefixData_pre_cut_center_active rightData
+    · simp [preCd, preCenter, hleftCenter]
+      exact cutPrefixData_pre_cut_center_active leftData
+    · simp [preCd, preCenter, hrightCenter]
+      exact cutPrefixData_pre_cut_center_active rightData
   refine ⟨preCd, hprefix, ?_⟩
   dsimp only
   refine ⟨hdoublyActive, ?_⟩
   intro hcontrPre
   have hcontrBase :
       (leftData.base.get leftData.idxJ) 🗲 (rightData.base.get rightData.idxJ) := by
-    simpa [preCd, preCenter, hleftCenter, hrightCenterLeft,
-      CircuitDerivation.leftTime, CircuitDerivation.rightTime] using hcontrPre
+    have h' := hcontrPre
+    simp [preCd, preCenter, hleftCenter, hrightCenterLeft, CircuitDerivation.leftTime,
+        CircuitDerivation.rightTime] at h'
+    exact h'
   exact cutPrefix_pair_lower_inconsistent_of_center_contradiction cd leftData
     rightData hcontrBase
 
@@ -1858,10 +1860,10 @@ theorem incompatible_lower_upper_branch_inconsistent_of_prefix_witness
     simpa [hleftUpper] using hrightUpper
   have hactive : preCd.DoublyActive preUpper := by
     constructor
-    · simpa [preCd, preUpper, hleftUpper, leftCutDeriv] using
-        cutPrefixData_final_cut_upper_active leftData
-    · simpa [preCd, preUpper, hrightUpper] using
-        cutPrefixData_pre_cut_center_active rightData
+    · simp [preCd, preUpper, hleftUpper, leftCutDeriv]
+      exact cutPrefixData_final_cut_upper_active leftData
+    · simp [preCd, preUpper, hrightUpper]
+      exact cutPrefixData_pre_cut_center_active rightData
   have htarget :
       leftData.base.paperIndex leftData.idxI <
         rightData.base.paperIndex rightData.idxI := by
@@ -1900,7 +1902,7 @@ theorem incompatible_lower_upper_branch_inconsistent_of_prefix_witness
           (rightData.tj # (⋉ (rightData.base.paperIndex rightData.idxJ)
               rightData.tk)) := by
     rw [CircuitDerivation.rightTime, hrightUpper]
-    simpa [preCd] using rightData.hj
+    exact rightData.hj
   have hbeforeLast : preCd.circuit.left.1.paperIndex preUpper < preCd.length := by
     have hidx :
         rightData.idxJ.val + 1 < rightData.base.length := by
@@ -1911,7 +1913,7 @@ theorem incompatible_lower_upper_branch_inconsistent_of_prefix_witness
       have hval := congrArg Fin.val hrightUpper
       simpa [CircuitDerivation.rightIndex] using hval
     have hlen : rightData.base.length = preCd.length := by
-      simpa [preCd, CircuitDerivation.length] using
+      exact
         preCd.circuit.right_length_eq_length
     change preUpper.val + 1 < preCd.length
     rw [hpreUpper_val]
@@ -2267,15 +2269,14 @@ theorem reverse_ordered_witness_of_swapped_incompatible_and_same_center
   have hcompatBack : cd.RightCompatibleUpTo l := by
     have hcompatBackSwap : cd.swap.swap.RightCompatibleUpTo l :=
       cd.swap.swap_rightCompatibleUpTo (start := l) (by
-        simpa [l, CircuitDerivation.swap, Circuit.swap,
-          CircuitDerivation.rightIndex] using hcompatS)
+        exact hcompatS)
     simpa [CircuitDerivation.swap, Circuit.swap] using hcompatBackSwap
   have hactiveBack : cd.ActiveInconsistentIndex l := by
     simpa [l] using cd.activeInconsistentIndex_of_swap hactiveS
   exact
     ⟨l,
       by
-        simpa [l, centerS, CircuitDerivation.rightIndex] using hlS_center,
+        exact hlS_center,
       hcompatBack, hactiveBack⟩
 
 /--
@@ -2603,11 +2604,10 @@ theorem same_upper_branch_inconsistentIndex
         Prepath.paperIndex] using hpaper)
   have hactive : preCd.DoublyActive preLower := by
     constructor
-    · simpa [preCd, preLower, hleftLower, CircuitDerivation.leftTime] using
-        cutPrefixData_pre_cut_center_active leftData
-    · simpa [preCd, preLower, hrightLower, rightCutDeriv,
-        CircuitDerivation.rightTime] using
-        cutPrefixData_final_cut_lower_active rightData
+    · simp [preCd, preLower, hleftLower, CircuitDerivation.leftTime]
+      exact cutPrefixData_pre_cut_center_active leftData
+    · simp [preCd, preLower, hrightLower, rightCutDeriv, CircuitDerivation.rightTime]
+      exact cutPrefixData_final_cut_lower_active rightData
   have hpreLower_beforeLast :
       preCd.circuit.left.1.paperIndex preLower < preCd.length := by
     have hidx :
@@ -2683,9 +2683,10 @@ theorem same_upper_branch_inconsistentIndex
         controller (leftData.base.get leftData.idxK) =
           controller
             ((Derivation.root rightCutDeriv).get (preCd.rightIndex leftData.idxK)) := by
-      simpa [preCd, CircuitDerivation.initialPrefixDerivation, preCenter,
-        hleftCenter,
-        CircuitDerivation.leftTime, CircuitDerivation.rightTime] using hctrl
+      have h' := hctrl
+      simp [preCd, CircuitDerivation.initialPrefixDerivation, preCenter, hleftCenter,
+          CircuitDerivation.leftTime, CircuitDerivation.rightTime] at h'
+      exact h'
     have hctrl'' :
         controller (leftData.base.get leftData.idxK) =
           controller ((Derivation.root rightCutDeriv).get rightData.idxJ) := by
@@ -2785,8 +2786,9 @@ theorem same_upper_branch_inconsistentIndex
           rightData.ti # (⋊ (leftData.base.paperIndex leftData.idxJ)
               rightBase) := by
       rw [CircuitDerivation.rightTime, hrightLower]
-      simpa [preCd, rightCutDeriv, rightBase, htarget] using
-        hrightLowerShape
+      have h' := hrightLowerShape
+      simp [preCd, rightCutDeriv, rightBase, htarget] at h'
+      exact h'
     rw [hrightEq]
     exact le_refl _
   have hcontr :

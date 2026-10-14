@@ -837,8 +837,7 @@ theorem nonmonotoneParameterAttestation_not_monotone :
   intro hmono
   exact bool_true_not_le_false
     (by
-      simpa [nonmonotoneParameterAttestation, nonmonotoneParameterAttestationToFun] using
-        hmono diamond_bot_le_left false)
+      exact hmono diamond_bot_le_left false)
 
 /-- Remark 7.3, second component: attestations need not be parameter-monotone (`y ≤ y' ⇏ x # y ≤ x # y'`). -/
 theorem exists_attestation_not_parameterMonotone :

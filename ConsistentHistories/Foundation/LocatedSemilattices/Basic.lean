@@ -529,13 +529,13 @@ theorem attest_eq_left_or_right_or_topTime_of_same_controller
   rcases hseq p ⟨t, ht⟩ ⟨t', ht'⟩ with hleft | hright | htop
   · exact Or.inl (by
       have hval := congrArg Subtype.val hleft
-      simpa [fiber] using hval)
+      exact hval)
   · exact Or.inr (Or.inl (by
       have hval := congrArg Subtype.val hright
-      simpa [fiber] using hval))
+      exact hval))
   · exact Or.inr (Or.inr (by
       have hval := congrArg Subtype.val htop
-      simpa [fiber, topTime] using hval))
+      exact hval))
 
 /-- Notation 2.2.4, `CTime`: all consistent times. -/
 def CTime : Type v :=
@@ -641,12 +641,12 @@ theorem contradicts_iff_fiber_contradicts
   constructor
   · intro h
     apply Subtype.ext
-    simpa [fiber] using h.2.trans (by rw [hs])
+    exact h.2.trans (by rw [hs]; rfl)
   · intro h
     constructor
     · exact hs.trans ht.symm
     · have hval := congrArg Subtype.val h
-      simpa [fiber, hs] using hval
+      rw [hs]; exact hval
 
 theorem same_controller_incomparable_iff_contradicts_of_consistentTime
     (hseq : Sequential (Time := Time)) {p : Ctrl} {s t : Time}

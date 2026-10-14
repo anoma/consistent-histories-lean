@@ -724,7 +724,7 @@ instance semilattice : BoundedSemilattice Point where
 /-- Example 2.1.4: the example is a top-tree. -/
 theorem isTopTree : BoundedSemilattice.IsTopTree (α := Point) := by
   intro x y
-  cases x <;> cases y <;> simp [semilattice, Point.join]
+  cases x <;> cases y <;> decide
 
 theorem join_a_b : Point.a ⊔ Point.b = Point.b := rfl
 

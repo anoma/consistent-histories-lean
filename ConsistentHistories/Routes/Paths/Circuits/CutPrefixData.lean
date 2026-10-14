@@ -99,10 +99,10 @@ theorem attest_lower_bound_to_prefix {Time : Type v} {Ctrl : Type u} [LocatedSem
     exact data.cutJ_eq.symm.trans hcenter
   have hidxI_cast : Fin.cast hlater.length_eq data.idxI = lower := by
     apply Fin.ext
-    exact Nat.succ.inj (by simpa [Prepath.paperIndex] using hidxI_paper)
+    exact Nat.succ.inj (by exact hidxI_paper)
   have hidxJ_cast : Fin.cast data.hprefix.length_eq data.idxJ = center := by
     apply Fin.ext
-    exact Nat.succ.inj (by simpa [Prepath.paperIndex] using hidxJ_paper)
+    exact Nat.succ.inj (by exact hidxJ_paper)
   have hshape :
       (Derivation.root dcut).get data.idxI = data.ti # centerTime := by
     have hi_ne_k : data.idxI ≠ data.idxK := by
@@ -124,11 +124,14 @@ theorem attest_lower_bound_to_prefix {Time : Type v} {Ctrl : Type u} [LocatedSem
     have hle := InitialPrefix.times_increase hlater data.idxI
     change (dcut.root.get data.idxI) ≼ (U.get (Fin.cast hlater.length_eq data.idxI)) at hle
     rw [hshape] at hle
-    simpa [hidxI_cast] using hle
+    erw [hidxI_cast] at hle
+    exact hle
   have hcenterBound := InitialPrefix.times_increase data.hprefix data.idxJ
   have hcenterController :
       controller centerTime = controller (T.get center) := by
-    simpa [centerTime, dcut, hidxJ_cast] using hcenterBound.1
+    have h := hcenterBound.1
+    erw [hidxJ_cast] at h
+    exact h
   exact ⟨data.ti, centerTime, hlowerBound, hcenterController⟩
 
 /--
@@ -163,10 +166,10 @@ theorem attest_lower_bound_to_prefix_base_center {Time : Type v} {Ctrl : Type u}
     exact data.cutJ_eq.symm.trans hcenter
   have hidxI_cast : Fin.cast hlater.length_eq data.idxI = lower := by
     apply Fin.ext
-    exact Nat.succ.inj (by simpa [Prepath.paperIndex] using hidxI_paper)
+    exact Nat.succ.inj (by exact hidxI_paper)
   have hidxJ_cast : Fin.cast data.hprefix.length_eq data.idxJ = center := by
     apply Fin.ext
-    exact Nat.succ.inj (by simpa [Prepath.paperIndex] using hidxJ_paper)
+    exact Nat.succ.inj (by exact hidxJ_paper)
   have hshape :
       (Derivation.root dcut).get data.idxI =
         data.ti # (data.base.get data.idxJ) := by
@@ -183,7 +186,9 @@ theorem attest_lower_bound_to_prefix_base_center {Time : Type v} {Ctrl : Type u}
     have hle := InitialPrefix.times_increase hlater data.idxI
     change (dcut.root.get data.idxI) ≼ (U.get (Fin.cast hlater.length_eq data.idxI)) at hle
     rw [hshape] at hle
-    simpa [hidxI_cast] using hle
+    have h' := hle
+    erw [hidxI_cast] at h'
+    exact h'
   have hcenterBound := InitialPrefix.times_increase data.hprefix data.idxJ
   have hcenterController :
       controller (data.base.get data.idxJ) =
@@ -191,7 +196,9 @@ theorem attest_lower_bound_to_prefix_base_center {Time : Type v} {Ctrl : Type u}
     change (dcut.root.get data.idxJ) ≼ (T.get (Fin.cast data.hprefix.length_eq data.idxJ)) at hcenterBound
     have hctrl := hcenterBound.1
     rw [hcenter_unchanged] at hctrl
-    simpa [hidxJ_cast] using hctrl
+    have h' := hctrl
+    erw [hidxJ_cast] at h'
+    exact h'
   exact ⟨data.ti, hlowerBound, hcenterController⟩
 
 /--
@@ -217,7 +224,7 @@ theorem nextIndex_upper_bound_to_prefix {Time : Type v} {Ctrl : Type u} [Located
     exact data.cutK_eq.symm.trans hupper
   have hidxK_cast : Fin.cast hlater.length_eq data.idxK = upper := by
     apply Fin.ext
-    exact Nat.succ.inj (by simpa [Prepath.paperIndex] using hidxK_paper)
+    exact Nat.succ.inj (by exact hidxK_paper)
   have hshape :
       (Derivation.root dcut).get data.idxK =
         ↱ (data.base.paperIndex data.idxI) data.tk := by
@@ -225,7 +232,9 @@ theorem nextIndex_upper_bound_to_prefix {Time : Type v} {Ctrl : Type u} [Located
   have hle := InitialPrefix.times_increase hlater data.idxK
   change (dcut.root.get data.idxK) ≼ (U.get (Fin.cast hlater.length_eq data.idxK)) at hle
   rw [hshape] at hle
-  simpa [hidxK_cast, data.cutI_eq.symm] using hle
+  have h' := hle
+  erw [hidxK_cast, data.cutI_eq.symm] at h'
+  exact h'
 
 end CutPrefixData
 

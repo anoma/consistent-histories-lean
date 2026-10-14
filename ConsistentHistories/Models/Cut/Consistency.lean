@@ -297,6 +297,18 @@ instance concreteLocatedSemilattice : LocatedSemilattice ConcreteTime ConcreteCt
     · rfl
     · exact ConcreteTime.join_preserves_top_join hcontr.2
 
+@[simp] theorem concreteLocatedSemilattice_attest (t s : ConcreteTime) :
+    t # s = ConcreteTime.join t s :=
+  rfl
+
+@[simp] theorem concreteLocatedSemilattice_bot (p : ConcreteCtrl) :
+    concreteLocatedSemilattice.bot p = ConcreteTime.bot :=
+  rfl
+
+@[simp] theorem concreteLocatedSemilattice_top (p : ConcreteCtrl) :
+    concreteLocatedSemilattice.top p = ConcreteTime.top :=
+  rfl
+
 /-- Proposition 3.3.1: concrete attestation is controller-preserving. -/
 theorem concreteLocatedSemilattice_controller_preserving
     (t s : ConcreteTime) :
@@ -583,14 +595,19 @@ theorem locatedSemilatticeWithCut_exists :
 theorem concreteLocatedSemilattice_sequential :
     concreteLocatedSemilattice.Sequential := by
   intro p t t'
-  rcases t with ⟨t, _ht⟩
-  rcases t' with ⟨t', _ht'⟩
-  cases t <;> cases t' <;>
-    simp [LocatedSemilattice.fiber, concreteLocatedSemilattice, ConcreteTime.join,
-      ConcreteTime.joinChain, ConcreteTime.joinChainCutMe, ConcreteTime.chainRank?]
-  all_goals repeat split
-  all_goals simp_all
-  all_goals omega
+  have key : ∀ t t' : ConcreteTime, ConcreteTime.join t t' = t ∨
+      ConcreteTime.join t t' = t' ∨ ConcreteTime.join t t' = ConcreteTime.top := by
+    intro t t'
+    cases t <;> cases t' <;>
+      simp [ConcreteTime.join,
+        ConcreteTime.joinChain, ConcreteTime.joinChainCutMe, ConcreteTime.chainRank?]
+    all_goals repeat split
+    all_goals simp_all
+    all_goals omega
+  rcases key t.1 t'.1 with h | h | h
+  · exact Or.inl (Subtype.ext h)
+  · exact Or.inr (Or.inl (Subtype.ext h))
+  · exact Or.inr (Or.inr (Subtype.ext h))
 
 /--
 Proposition 3.3.1: the unique concrete controller fiber has the top-tree
@@ -815,7 +832,8 @@ theorem manyLocatedSemilattice_sequential
   intro p t t'
   rcases t with ⟨⟨p0, x⟩, ht⟩
   rcases t' with ⟨⟨p1, y⟩, ht'⟩
-  dsimp [manyLocatedSemilattice] at ht ht'
+  change p0 = p at ht
+  change p1 = p at ht'
   subst p0
   subst p1
   rcases hseq base ⟨x, hbase x⟩ ⟨y, hbase y⟩ with hleft | hright | htop
@@ -936,7 +954,6 @@ def manyCuttingFlagSet
           have hbaseCons : ConsistentTime ((cutting kind i) x) := by
             intro htop
             apply hcons
-            dsimp [LocatedSemilattice.ConsistentTime, manyLocatedSemilattice]
             exact congrArg (fun y => (p, y))
               (by simpa [hbase ((cutting kind i) x)] using htop)
           have hbaseEq : (cutting kind i) x = (cutting kind' j) x' := by
@@ -999,12 +1016,13 @@ def manyControllers
         | mk _p' x' =>
           constructor
           · exact hctrl
-          · dsimp at hctrl ⊢
+          · change p = _p' at hctrl
             cases hctrl
             have hcontr :=
               cutme_contradicts_cutyou j ((hbase x).trans (hbase x').symm)
-            simpa [manyLocatedSemilattice, manyFlag,
-              hbase ((cutting CutFlagKind.cutMe j) x)] using hcontr.2
+            have h2 := hcontr.2
+            rw [hbase ((cutting CutFlagKind.cutMe j) x)] at h2
+            exact congrArg (fun y => (p, y)) h2
     cutting_injective := by
       intro _kind _kind' _i _i' h
       exact cutting_injective (manyFlag_injective base hbase h) }
